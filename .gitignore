@@ -44,11 +44,3 @@ yarn-error.log*
 
 # idea files
 .idea
-
-sa.json
-
-en64.sh
-en64.json
-en65.json
-en66.json
-ocr-res.json

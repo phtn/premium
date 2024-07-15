@@ -1,1 +1,1 @@
-# OCR Testing with Document AI
+# LAV Premium Chocolates Web app

@@ -1,7 +1,5 @@
 "use client";
 
-import ClaudeImageUploader from "./claude-image";
-
 export const PageContent = () => {
-  return <ClaudeImageUploader />;
+  return <div className="h-[300px] text-4xl font-bold">tRPC + turso</div>;
 };

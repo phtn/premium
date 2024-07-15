@@ -1,7 +1,7 @@
 import { callerFactory, mergeRouters } from "@/server/trpc";
-import { ProcRequestRouter } from "./ocr";
+import { postRouter } from "./post";
 
-export const appRouter = mergeRouters(ProcRequestRouter);
+export const appRouter = mergeRouters(postRouter);
 
 export type AppRouter = typeof appRouter;
 

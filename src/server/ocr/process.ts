@@ -18,8 +18,6 @@ const procRequest = async (
 
 export const onProcRequest = async (params: ProcRequestSchema) => {
   // const accessToken = (await getAccessToken()) as string;
-  const axiosInstance = createAxiosInstance(
-    "ya29.a0AXooCgugRH1JKoonKzU3LlTMvJ9rY98gg7iQWVEaPLxLmNRiwDb9UFMCpQ9tpWPebv5YKBQeftLvL9RLycJRnKtHsi92qj2T1KJ2pc3ym8o8iKQVNoWISjMcU-hYICMqvL5EeEjfN42OXivIYtowjVaua7jkZbs_KRIjyAaCgYKASwSARISFQHGX2MiCUMN3czGu-ugLuSQDjRKMg0173",
-  );
+  const axiosInstance = createAxiosInstance("");
   return await procRequest(axiosInstance, params);
 };

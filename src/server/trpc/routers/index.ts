@@ -1,7 +1,9 @@
-import { callerFactory, mergeRouters } from "@/server/trpc";
-import { postRouter } from "./post";
+import { callerFactory, router } from "@/server/trpc";
+import { paymongoRouter } from "./paymongo";
 
-export const appRouter = mergeRouters(postRouter);
+export const appRouter = router({
+  paymongo: paymongoRouter,
+});
 
 export type AppRouter = typeof appRouter;
 

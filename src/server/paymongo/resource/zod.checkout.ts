@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CurrencySchema, PaymentMethods } from "./zod.common";
 
 export const AddressSchema = z.object({
   line1: z.string(),
@@ -27,7 +28,8 @@ export const LineItemSchema = z.object({
   quantity: z.number(),
 });
 export type LineItem = z.infer<typeof LineItemSchema>;
-
+// card, gcash, grab_pay, paymaya, dob, dob_ubp, brankas_bdo, brankas_landbank,
+// brankas_metrobank
 export const AttributesSchema = z.object({
   cancel_url: z.string(),
   billing: BillingSchema,
@@ -55,3 +57,17 @@ export const CheckoutResourceSchema = z.object({
 
 // You can use z.infer to get the TypeScript type
 export type CheckoutResource = z.infer<typeof CheckoutResourceSchema>;
+
+export const CreateSourceSchema = z.object({
+  data: z.object({
+    attributes: z.object({
+      amount: z.number(),
+      currency: CurrencySchema,
+      type: PaymentMethods,
+      redirect: z.object({
+        success: z.string().url(),
+        failed: z.string().url(),
+      }),
+    }),
+  }),
+});

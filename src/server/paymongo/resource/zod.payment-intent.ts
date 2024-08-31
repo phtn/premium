@@ -4,6 +4,7 @@ import {
   CurrencySchema,
   ErrorSubCodeSchema,
   MetadataTypeSchema,
+  PaymentMethods,
 } from "./zod.common";
 import { PaymentResourceSchema } from "./zod.payments";
 
@@ -87,6 +88,7 @@ export type BaseRetrievePaymentIntentParams = z.infer<
 
 export const RetrievePaymentIntentParamsUsingPublicSchema = z.object({
   client_key: z.string(),
+  id: z.string(),
 });
 export type RetrievePaymentIntentParamsUsingPublic = z.infer<
   typeof RetrievePaymentIntentParamsUsingPublicSchema
@@ -107,11 +109,12 @@ export type BaseAttachPaymentIntentParams = z.infer<
 >;
 
 export const AttachPaymentIntentParamsUsingPublicSchema = z.object({
+  id: z.string(),
   data: z.object({
     attributes: z.object({
-      payment_method: z.string(),
+      payment_method: PaymentMethods,
       client_key: z.string(),
-      return_url: z.string().optional(),
+      return_url: z.string().url().optional(),
     }),
   }),
 });

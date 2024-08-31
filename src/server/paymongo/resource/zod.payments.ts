@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { SourceTypeSchema } from "./zod.sources";
-import { BillingSchema, CurrencySchema } from "./zod.common";
+import { BillingSchema, CurrencySchema, PaymentMethods } from "./zod.common";
+import { SourceSchema } from "./zod.source";
 
 export const PaymentStatusSchema = z.union([
   z.literal("pending"),
@@ -18,7 +18,7 @@ export const PaymentCardTypeSchema = z.object({
 export type PaymentCardType = z.infer<typeof PaymentCardTypeSchema>;
 export const PaymentEwalletTypeSchema = z.object({
   id: z.string(),
-  type: SourceTypeSchema,
+  type: PaymentMethods,
 });
 export type PaymentEwalletType = z.infer<typeof PaymentEwalletTypeSchema>;
 
@@ -70,10 +70,7 @@ export const CreatePaymentParamsSchema = z.object({
       description: z.string().optional(),
       currency: CurrencySchema,
       statement_descriptor: z.string().optional(),
-      source: z.object({
-        id: z.string(),
-        type: z.literal("source"),
-      }),
+      source: SourceSchema,
     }),
   }),
 });

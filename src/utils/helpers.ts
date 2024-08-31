@@ -35,6 +35,12 @@ export const errHandler =
       console.log(args[0] ?? "Error", e.message, args[2] ?? "");
     }
   };
+export const okHandler =
+  <T>(setLoading: Dispatch<SetStateAction<boolean>>) =>
+  (res: T) => {
+    console.log(res);
+    setLoading(false);
+  };
 
 export const opts = (...args: ReactElement[]) => {
   if (!args[1]) return null;

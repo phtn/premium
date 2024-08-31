@@ -1,7 +1,6 @@
 "use client";
 
 // import { useState } from "react";
-
 // import { TRPC } from "@/trpc/provider";
 
 export function LatestPost() {

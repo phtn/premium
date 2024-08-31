@@ -1,7 +1,8 @@
 import { fontFamily } from "tailwindcss/defaultTheme";
-import svgToDataUri from "mini-svg-data-uri";
+// import svgToDataUri from "mini-svg-data-uri";
 import tailwindcssAnimate from "tailwindcss-animate";
-import { type Config } from "tailwindcss/types/config";
+import { nextui } from "@nextui-org/theme";
+import { type Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 // import twa from "tailwindcss-animated";
 
@@ -50,7 +51,11 @@ function addVariablesForColors({ addBase, theme }: AddVars) {
 }
 
 export default {
-  content: ["./src/**/*.tsx"],
+  content: [
+    "./src/**/*.tsx",
+    "./node_modules/@nextui-org/theme/dist/components/(button|ripple|spinner).js",
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+  ],
   darkMode: "class",
   theme: {
     extend: {
@@ -69,6 +74,8 @@ export default {
         copperx: "F1F5F9",
         ghost: "#F7FAFD",
         dyan: "#083344",
+        hermes: "#F37021",
+        default: "#e6ebef",
       },
       backgroundSize: {
         "size-200": "200% 200%",
@@ -127,20 +134,40 @@ export default {
       },
     },
   },
-
   plugins: [
-    tailwindcssAnimate,
-    // twa,
+    tailwindcssAnimate, // twa,plugin(() => addVariablesForColors),plugin(function ({ matchUtilities,theme }) {
+    nextui({
+      defaultTheme: "light",
+      defaultExtendTheme: "light",
+      themes: {
+        light: {
+          colors: {
+            primary: { DEFAULT: "#0ea5e9", foreground: "#ffffff" },
+            secondary: {
+              DEFAULT: "#ffffff",
+              foreground: "#030712",
+            },
+            default: { DEFAULT: "#e6ebef", foreground: "#030712" },
+            foreground: "#030712",
+            background: "#ffffff",
+          },
+        },
+        dark: {
+          colors: {
+            primary: "#0ea5e9",
+          },
+        },
+      },
+    }),
     plugin(() => addVariablesForColors),
-    plugin(function ({ matchUtilities, theme }) {
-      matchUtilities(
+    plugin((api) =>
+      api.matchUtilities(
         {},
-
         {
-          values: flattenColorPalette(theme("backgroundColor")),
+          values: flattenColorPalette(api.theme("backgroundColor")),
           type: "color",
         },
-      );
-    }),
+      ),
+    ),
   ],
 } satisfies Config;

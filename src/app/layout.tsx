@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { type Metadata } from "next";
 
 import { TRPCProvider } from "@/trpc/provider";
+import { NextUIProvider } from "@nextui-org/system";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,10 +24,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`font-sans ${inter.variable} ${GeistSans.variable}`}
+      className={`font-sans ${inter.variable} ${GeistSans.variable} antialiased`}
     >
       <body>
-        <TRPCProvider>{children}</TRPCProvider>
+        <NextUIProvider>
+          <TRPCProvider>{children}</TRPCProvider>
+        </NextUIProvider>
       </body>
     </html>
   );

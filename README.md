@@ -1,1 +1,1 @@
-# LAV Premium Chocolates Web app
+# Premium Web app

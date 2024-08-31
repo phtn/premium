@@ -37,8 +37,14 @@ export const errHandler =
   };
 
 export const opts = (...args: ReactElement[]) => {
+  if (!args[1]) return null;
   return new Map([
     [true, args[0]],
     [false, args[1]],
   ]);
 };
+
+export const encodeBase64 = (data: string | Buffer): string =>
+  Buffer.from(data).toString("base64");
+
+export const decodeBase64 = (str: string): Buffer => Buffer.from(str, "base64");

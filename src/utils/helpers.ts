@@ -1,3 +1,4 @@
+import { onError, onSuccess } from "@/components/ui/toaster";
 import type { Dispatch, ReactElement, SetStateAction } from "react";
 
 export const fileType = (file_type: string | undefined): string => {
@@ -27,19 +28,28 @@ export const fileSize = (bytes: number | undefined): string => {
 };
 
 export const errHandler =
-  (setLoading: Dispatch<SetStateAction<boolean>>, ...args: string[]) =>
-  (e: Error) => {
+  <T>(
+    setLoading: Dispatch<SetStateAction<boolean>>,
+    setError?: Dispatch<SetStateAction<T>>,
+  ) =>
+  (e: T) => {
+    onError("Panic!");
     setLoading(false);
-    console.error(args[0] ?? "Error", e.message);
-    if (args[1] && args[1].toLowerCase() === "log") {
-      console.log(args[0] ?? "Error", e.message, args[2] ?? "");
-    }
+    console.log(e);
+    if (setError) setError(e);
   };
 export const okHandler =
-  <T>(setLoading: Dispatch<SetStateAction<boolean>>) =>
+  <T>(
+    setLoading: Dispatch<SetStateAction<boolean>>,
+    setResult?: Dispatch<SetStateAction<T>>,
+  ) =>
   (res: T) => {
     console.log(res);
+    if (setResult) {
+      setResult(res);
+    }
     setLoading(false);
+    onSuccess("Success!");
   };
 
 export const opts = (...args: ReactElement[]) => {

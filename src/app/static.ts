@@ -1,4 +1,4 @@
-import type { Action, HeroProps } from "@/components/ui/hero";
+import type { Action, HeroProps } from "@/components/app/hero";
 import { type StickyScrollContent } from "@/components/ui/sticky-reveal";
 import { type TabItem } from "@/components/ui/tabs";
 import type { Extras, TopbarLink } from "@/components/ui/topbar";
@@ -13,7 +13,7 @@ export const links: TopbarLink[] = [
 export const extras: Extras[] = [
   {
     label: "Sign in",
-    href: "#",
+    href: "/signin",
   },
   // {
   //   href: "#",
@@ -23,8 +23,8 @@ export const extras: Extras[] = [
 ];
 
 export const actions: Action[] = [
-  { type: "primary", label: "Get full access", href: "#" },
-  { type: "default", label: "Learn more", href: "#" },
+  { type: "primary", label: "Get full access", href: "/shop" },
+  { type: "default", label: "Learn more", href: "/shop/electronics" },
 ];
 
 export const heroProps: HeroProps = {
@@ -63,7 +63,6 @@ export const tabItems: TabItem[] = [
   { id: 1, value: "community", label: "Community", content: serviceContents },
   { id: 2, value: "guides", label: "Guides", content: serviceContents },
   { id: 3, value: "about", label: "About Us", content: serviceContents },
-  { id: 4, value: "guides", label: "Guides", content: serviceContents },
 ];
 
 /* media with image

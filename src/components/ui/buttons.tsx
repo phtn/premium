@@ -1,4 +1,4 @@
-import { type DualIcon } from "@/app/index.types";
+import { type DualIcon } from "@/types";
 import { Button, type ButtonProps } from "@nextui-org/button";
 import Link from "next/link";
 import { forwardRef, type ReactNode } from "react";
@@ -18,7 +18,7 @@ export const LinkBtn = forwardRef<HTMLButtonElement, LinkBtnProps>(
         href={props.href}
         as={Link}
         color="secondary"
-        className="flex items-center space-x-2 bg-transparent text-sm capitalize tracking-tighter hover:text-sky-600"
+        className="flex items-center space-x-2 bg-transparent capitalize tracking-tighter hover:text-sky-600 portrait:text-sm"
       >
         {props.icon && <props.icon className={"size-5"} />}
         {props.label}

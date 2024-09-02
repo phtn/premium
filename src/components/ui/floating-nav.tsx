@@ -8,7 +8,7 @@ import {
 } from "framer-motion";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
-import type { ClassName, DualIcon } from "@/app/index.types";
+import type { ClassName, DualIcon } from "@/types";
 
 export interface FloatingNavItem {
   name: string;

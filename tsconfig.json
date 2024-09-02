@@ -23,7 +23,8 @@
       "@paymongo/*": ["./src/server/paymongo/*"],
       "@resource/*": ["./src/server/paymongo/resource/*"],
       "@requests/*": ["./src/server/paymongo/requests/*"],
-      "@sdk/*": ["./src/server/paymongo/sdk/*"]
+      "@sdk/*": ["./src/server/paymongo/sdk/*"],
+      "@lib/*": ["./src/lib/*"]
     }
   },
   "include": [

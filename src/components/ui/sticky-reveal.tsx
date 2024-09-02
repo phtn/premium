@@ -74,7 +74,7 @@ export const StickyScroll = ({
   return (
     <motion.div
       className={cn(
-        "relative flex h-[30rem] justify-center space-x-10 overflow-y-auto border p-10 text-gray-400 transition-colors duration-300 ease-out md:rounded-xl",
+        "relative flex h-[30rem] justify-center space-x-10 overflow-y-auto p-10 text-gray-400 transition-colors duration-300 ease-out md:rounded-xl",
         linearGradients[activeCard],
         contentClassName,
       )}

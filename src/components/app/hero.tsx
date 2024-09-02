@@ -31,8 +31,8 @@ export const Hero = (props: HeroProps) => {
         {actions?.map((action) => (
           <Button
             as={Link}
-            size={`lg`}
             key={action.label}
+            size={`lg`}
             href={action.href}
             variant={action.type === "primary" ? "solid" : "faded"}
             color={action.type}
@@ -40,7 +40,7 @@ export const Hero = (props: HeroProps) => {
               "text-gray-800": action.type !== "primary",
             })}
           >
-            {action.label}
+            <div className="animate-enter delay-500">{action.label}</div>
           </Button>
         ))}
       </>
@@ -77,7 +77,7 @@ export const HeroLight = (props: HeroProps) => {
   const ActionButtons = useCallback(() => {
     return (
       <>
-        {actions?.map((action) => (
+        {actions?.map((action, i) => (
           <Button
             key={action.label}
             as={Link}
@@ -85,7 +85,10 @@ export const HeroLight = (props: HeroProps) => {
             size={`lg`}
             variant={"shadow"}
             color={action.type}
-            className="group text-sm font-medium tracking-tighter"
+            className={cn(
+              "animate-enter group text-sm font-medium tracking-tighter",
+              { "delay-100": i === 1 },
+            )}
           >
             {action.label}
           </Button>
@@ -95,9 +98,9 @@ export const HeroLight = (props: HeroProps) => {
   }, [actions]);
 
   return (
-    <div className="_portrait:border-y-[0.33px] relative mb-6 flex flex-col items-center justify-center border-gray-400 leading-none md:mx-0 portrait:w-screen">
+    <div className="_portrait:border-y-[0.33px] relative mb-6 flex flex-col items-center justify-center leading-none md:mx-12 portrait:w-screen">
       <div className="_border bg-[url('/svg/heart_v1.svg')]_ pointer-events-none absolute h-full w-full border-gray-500 bg-cover bg-right opacity-20"></div>
-      <div className="portrait:bg-default-100/40 grid h-fit w-full lg:mx-12 lg:grid-cols-2">
+      <div className="grid h-fit w-full from-default-100/40 via-default-100/20 to-transparent lg:mx-12 lg:grid-cols-2 portrait:bg-gradient-to-b">
         <div className="relative z-10 flex items-end px-6 pb-8 pt-12 md:p-12 md:pt-12">
           <div className={cn("w-full space-y-8 text-sky-950", foreground)}>
             <div className="flex w-full flex-col px-2 portrait:items-center portrait:justify-center portrait:px-0">
@@ -116,8 +119,8 @@ export const HeroLight = (props: HeroProps) => {
             </div>
           </div>
         </div>
-        <div className="inset-0 hidden  items-end rounded-3xl bg-gradient-to-br from-sky-900/20 to-transparent text-gray-800 shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)] lg:flex">
-          <div className="center h-48 w-full bg-[url('/svg/opera.svg')] bg-cover" />
+        <div className="inset-0 hidden items-end rounded-3xl rounded-t-[256px] bg-gradient-to-br from-sky-900/20 to-transparent text-gray-800 shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)] lg:flex">
+          <div className="center h-72 w-full bg-[url('/svg/opera_v2.svg')] bg-cover bg-bottom" />
         </div>
       </div>
     </div>

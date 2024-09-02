@@ -1,6 +1,6 @@
 import { Tab, Tabs } from "@nextui-org/react";
 import { type StickyScrollContent } from "./sticky-reveal";
-import { ElderScroll } from "@/app/_components/scroll";
+import { ElderScroll } from "@/components/app/scroll";
 
 export interface TabItem {
   id: string | number;

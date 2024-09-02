@@ -1,7 +1,7 @@
 "use server";
 
-import { type CreateSourceParams } from "@/server/paymongo/resource/zod.source";
+import { asyncFn } from "@/server/trpc/routers/utils";
 import { trpc } from "@/trpc/server";
 
-export const createSource = async (params: CreateSourceParams) =>
-  await trpc.paymongo.createSource(params);
+export const createSource = asyncFn(trpc.paymongo.createSource);
+export const retrieveSource = asyncFn(trpc.paymongo.retrieveSource);

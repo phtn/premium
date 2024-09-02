@@ -88,9 +88,43 @@ export default {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       animation: {
+        enter: "enter 0.275s ease-out normal both",
+        back: "back 0.25s ease-out normal both",
         shimmer: "shimmer 5s linear infinite",
       },
       keyframes: {
+        back: {
+          "0%": {
+            opacity: "0",
+            transform: "translateZ(0) scale(1.05)",
+          },
+          "60%": {
+            opacity: "0.75",
+            transform: "translateZ(0) scale(1.025)",
+            backfaceVisibility: "hidden",
+            webkitFontSmoothing: "antialiased",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateZ(0) scale(1)",
+          },
+        },
+        enter: {
+          "0%": {
+            opacity: "0",
+            transform: "translateZ(0) scale(0.95)",
+          },
+          "60%": {
+            opacity: "0.75",
+            transform: "translateZ(0) scale(1.02)",
+            backfaceVisibility: "hidden",
+            webkitFontSmoothing: "antialiased",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateZ(0) scale(1)",
+          },
+        },
         shimmer: {
           from: {
             backgroundPosition: "0 0",

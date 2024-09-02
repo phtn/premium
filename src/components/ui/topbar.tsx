@@ -5,8 +5,9 @@ import {
   NavbarItem,
 } from "@nextui-org/react";
 import { LinkBtn } from "./buttons";
-import type { DualIcon } from "@/app/index.types";
-import Image from "next/image";
+import type { DualIcon } from "@/types";
+import { Logo } from "@/components/app/logo";
+import { easeOut, motion } from "framer-motion";
 
 interface Brand {
   label?: string;
@@ -31,23 +32,42 @@ export function Topbar({ brand, links, extras }: TopbarProps) {
   return (
     <Navbar shouldHideOnScroll isBlurred>
       <NavbarBrand>
-        <Image
-          alt="access-logo"
-          src="/svg/access_logo.svg"
-          width={0}
-          height={0}
-          unoptimized
-          priority
-          className="h-5 w-auto text-gray-900 md:h-6"
-        />
-        <div className="mx-2 font-semibold tracking-tighter text-gray-600 md:mx-4 portrait:text-sm">
+        <motion.div
+          initial={{
+            x: 5,
+          }}
+          transition={{
+            duration: 2,
+            easing: easeOut,
+          }}
+          animate={{ x: 0 }}
+        >
+          <Logo />
+        </motion.div>
+        <motion.div className="animate-enter mx-2 font-medium tracking-tighter text-gray-600 md:mx-4 portrait:text-sm">
           {brand.label}
-        </div>
+        </motion.div>
       </NavbarBrand>
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
         {links?.map((link, i) => (
           <NavbarItem key={`${i}_${link.label}`}>
-            <LinkBtn label={link.label} href={link.href} />
+            <motion.div
+              initial={{
+                opacity: 0,
+                scale: 0.95,
+                x: -10,
+                backfaceVisibility: "hidden",
+              }}
+              transition={{
+                duration: 0.15,
+                bounce: 0.1,
+                delay: 0.1,
+                easing: easeOut,
+              }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+            >
+              <LinkBtn label={link.label} href={link.href} />
+            </motion.div>
           </NavbarItem>
         ))}
       </NavbarContent>

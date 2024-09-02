@@ -1,9 +1,6 @@
-import { PageCont } from "./forked";
-
-export default async function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <PageCont />
-    </main>
-  );
+import { PageCont } from "./content";
+import type { Metadata } from "next";
+export const generateMetadata = (): Metadata => ({ title: "Main" });
+export default async function Main() {
+  return <PageCont />;
 }

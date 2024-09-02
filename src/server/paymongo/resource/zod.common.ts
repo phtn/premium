@@ -40,8 +40,23 @@ export const PaymentMethods = z.union([
   z.literal("qrph"),
   z.literal("billease"),
 ]);
+
 export const PaymentMethodTypeList = z.array(PaymentMethods);
 export type PaymentMethodType = z.infer<typeof PaymentMethodTypeList>;
+
+export const SpecialPaymentMethods = z.union([
+  z.literal("gcash"),
+  z.literal("card"),
+  z.literal("grab_pay"),
+  z.literal("paymaya"),
+  z.literal("dob"),
+  z.literal("brankas"),
+  z.literal("billease"),
+]);
+export const SpecialPaymentMethodTypeList = z.array(SpecialPaymentMethods);
+export type SpecialPaymentMethodType = z.infer<
+  typeof SpecialPaymentMethodTypeList
+>;
 
 export const RedirectSchema = z.object({
   success: z.string().url(),
@@ -77,3 +92,14 @@ export const BillingSchema = z.any();
 
 export const MetadataSchema = z.record(z.string(), z.any());
 export type Metadata = z.infer<typeof MetadataSchema>;
+
+export const TaxSchema = z.object({
+  amount: z.number(),
+  currency: CurrencySchema,
+  inclusive: z.boolean(),
+  name: z.string(),
+  type: z.string(),
+  value: z.string(),
+});
+
+export type Tax = z.infer<typeof TaxSchema>;

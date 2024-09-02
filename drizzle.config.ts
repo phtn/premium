@@ -3,7 +3,7 @@ import { type Config } from "drizzle-kit";
 import { env } from "@/env";
 
 export default {
-  schema: "./src/server/db/schema.ts",
+  schema: "@/server/db/schema.ts",
   dialect: "sqlite",
   driver: "turso",
   dbCredentials: {
@@ -11,5 +11,5 @@ export default {
     authToken: env.DATABASE_TKN,
   },
   out: "./drizzle/migrations",
-  tablesFilter: ["lav_*"],
+  tablesFilter: ["access_au_*"],
 } satisfies Config;

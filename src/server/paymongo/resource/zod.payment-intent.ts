@@ -5,6 +5,7 @@ import {
   ErrorSubCodeSchema,
   MetadataTypeSchema,
   PaymentMethods,
+  SpecialPaymentMethodTypeList,
 } from "./zod.common";
 import { PaymentResourceSchema } from "./zod.payments";
 
@@ -35,7 +36,7 @@ export type NextAction = z.infer<typeof NextActionSchema>;
 
 export const PaymentMethodOptionsSchema = z.object({
   card: z.object({
-    request_three_d_secure: z.union([z.literal("any"), z.literal("automatic")]),
+    request_three_d_secure: z.literal("any"),
   }),
 });
 export type PaymentMethodOptions = z.infer<typeof PaymentMethodOptionsSchema>;
@@ -45,18 +46,22 @@ export const PaymentIntentResourceSchema = z.object({
   type: z.literal("payment_intent"),
   attributes: z.object({
     amount: z.number(),
+    capture_type: z.literal("automatic"),
+    client_key: z.string(),
     currency: CurrencySchema,
     description: z.string().optional(),
+    livemode: z.boolean(),
     statement_descriptor: z.string(),
     status: PaymentIntentStatusSchema,
-    livemode: z.boolean(),
-    client_key: z.string(),
+    created_at: z.number(),
+    updated_at: z.number(),
     last_payment_error: LastPaymentErrorSchema.optional(), // Assuming LastPaymentErrorSchema is defined elsewhere
-    next_action: NextActionSchema.optional(), // Assuming NextActionSchema is defined elsewhere
-    payment_method_allowed: z.array(z.string()),
+    payment_method_allowed: SpecialPaymentMethodTypeList,
     payments: z.array(PaymentResourceSchema), // Assuming PaymentResourceSchema is defined elsewhere
+    next_action: NextActionSchema.nullable(), // Assuming NextActionSchema is defined elsewhere
     payment_method_options: PaymentMethodOptionsSchema.optional(), // Assuming PaymentMethodOptionsSchema is defined elsewhere
     metadata: MetadataTypeSchema,
+    setup_future_usage: z.boolean().nullable(),
   }),
 });
 export type PaymentIntentResource = z.infer<typeof PaymentIntentResourceSchema>;
@@ -65,11 +70,12 @@ export const CreatePaymentIntentParamsSchema = z.object({
   data: z.object({
     attributes: z.object({
       amount: z.number(),
+      currency: CurrencySchema,
       payment_method_allowed: AllowedPaymentMethodsSchema,
       payment_method_options: PaymentMethodOptionsSchema.optional(),
+      capture_type: z.literal("automatic"),
       description: z.string().optional(),
       statement_descriptor: z.string().optional(),
-      currency: CurrencySchema,
       metadata: MetadataTypeSchema.optional(),
     }),
   }),

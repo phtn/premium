@@ -11,8 +11,8 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
 
-    DATABASE_URL: z.string().url(),
-    DATABASE_TKN: z.string(),
+    TURSO_DATABASE_URL: z.string(),
+    TURSO_AUTH_TOKEN: z.string(),
 
     PM_PB_TEST_KEY: z.string(),
     PM_SC_TEST_KEY: z.string(),
@@ -45,8 +45,8 @@ export const env = createEnv({
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
 
-    DATABASE_URL: process.env.DATABASE_URL,
-    DATABASE_TKN: process.env.DATABASE_URL,
+    TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
+    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
 
     PM_PB_TEST_KEY: process.env.PM_PB_TEST_KEY,
     PM_SC_TEST_KEY: process.env.PM_SC_TEST_KEY,

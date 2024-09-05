@@ -1,12 +1,37 @@
 import { Button } from "@nextui-org/button";
+import { auth } from "@/lib/firebase/config";
+import { useSignInGoogle } from "@/utils/hooks/sso";
+import { errHandler } from "@/utils/helpers";
+import { type FormEvent } from "react";
+import { useAuthState } from "@/utils/hooks/authState";
 
 export const GoogleSignin = () => {
+  const { user } = useAuthState(auth);
+
+  const [sign, current, loading, oauth, error] = useSignInGoogle(auth);
+  const handleOnPress = async (e: FormEvent<HTMLButtonElement>) => {
+    console.log(user);
+    e.preventDefault();
+    await sign()
+      .then((result) => {
+        console.log("from hook", current);
+        console.log("from result", result);
+        console.log("from oauth", oauth);
+      })
+      .catch(errHandler)
+      .finally(() => console.log(error));
+  };
+
   return (
     <div className="flex w-full">
-      <Button className="flex h-[48px] w-full rounded-2xl">
-        <div className="flex h-full w-full items-center justify-between px-5">
+      <Button
+        isLoading={loading}
+        onClick={handleOnPress}
+        className="flex h-[48px] w-full animate-enter rounded-2xl delay-200"
+      >
+        <div className="flex h-full w-full items-center justify-center space-x-3">
           <p className="bg-gradient-to-r from-clay to-clay/70 bg-clip-text px-1 font-sans text-[16px] font-medium tracking-tighter text-transparent">
-            Sign in with Google
+            Continue with Google
           </p>
           <div
             className={`h-[48px] w-[48px] bg-[url('/svg/g_logo.svg')] bg-center bg-no-repeat`}

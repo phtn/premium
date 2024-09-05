@@ -48,7 +48,7 @@ export const Hero = (props: HeroProps) => {
   }, [actions]);
 
   return (
-    <div className="relative flex flex-col items-center justify-center leading-none md:mx-0 portrait:w-screen">
+    <div className="relative flex flex-col items-center justify-center leading-none md:mx-0 md:max-w-7xl portrait:w-screen">
       <div className="_border bg-[url('/svg/heart_v1.svg')]_ pointer-events-none absolute h-full w-full border-gray-500 bg-cover bg-right opacity-20"></div>
       <div className="md:rounded-2xl_ grid h-fit w-full bg-gradient-to-r from-gray-950 via-gray-900 to-gray-800 shadow-2xl md:grid-cols-2 lg:mx-12">
         <div className="relative z-10 flex items-end px-6 pb-8 pt-24 md:p-12 md:pt-56">
@@ -86,7 +86,7 @@ export const HeroLight = (props: HeroProps) => {
             variant={"shadow"}
             color={action.type}
             className={cn(
-              "animate-enter group text-sm font-medium tracking-tighter",
+              "group animate-enter text-sm font-medium tracking-tighter",
               { "delay-100": i === 1 },
             )}
           >
@@ -98,7 +98,7 @@ export const HeroLight = (props: HeroProps) => {
   }, [actions]);
 
   return (
-    <div className="_portrait:border-y-[0.33px] relative mb-6 flex flex-col items-center justify-center leading-none md:mx-12 portrait:w-screen">
+    <div className="relative mb-6 flex w-full max-w-5xl flex-col items-center justify-center leading-none portrait:w-screen">
       <div className="_border bg-[url('/svg/heart_v1.svg')]_ pointer-events-none absolute h-full w-full border-gray-500 bg-cover bg-right opacity-20"></div>
       <div className="grid h-fit w-full from-default-100/40 via-default-100/20 to-transparent lg:mx-12 lg:grid-cols-2 portrait:bg-gradient-to-b">
         <div className="relative z-10 flex items-end px-6 pb-8 pt-12 md:p-12 md:pt-12">
@@ -119,8 +119,10 @@ export const HeroLight = (props: HeroProps) => {
             </div>
           </div>
         </div>
-        <div className="inset-0 hidden items-end rounded-3xl rounded-t-[256px] bg-gradient-to-br from-sky-900/20 to-transparent text-gray-800 shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)] lg:flex">
+        <div className="relative inset-0 hidden items-end rounded-3xl rounded-t-[256px] bg-gradient-to-br from-sky-900/20 to-transparent text-gray-800 shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)] lg:flex">
           <div className="center h-72 w-full bg-[url('/svg/opera_v2.svg')] bg-cover bg-bottom" />
+          <div className="absolute -left-[30px] -top-[70px] z-30 h-[75px] w-[150px] bg-[url('/svg/qantas.svg')] bg-contain bg-center bg-no-repeat" />
+          <div className="absolute right-0 z-50 m-4 h-[150px] w-[180px] animate-enter bg-[url('/svg/stamp.svg')] bg-contain bg-center bg-no-repeat opacity-60 delay-1000" />
         </div>
       </div>
     </div>

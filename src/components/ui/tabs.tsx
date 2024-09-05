@@ -11,6 +11,7 @@ export interface TabItem {
 export interface TabCompProps {
   items: TabItem[];
 }
+
 export function TabComp({ items }: TabCompProps) {
   return (
     <div className="flex w-full flex-col gap-4 tracking-tight md:items-center">

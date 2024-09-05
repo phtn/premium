@@ -1,88 +1,82 @@
-import { githubProvider, googleProvider } from "@/lib/firebase/config";
 import type {
   Auth,
   AuthError,
-  AuthProvider,
   CustomParameters,
+  OAuthCredential,
   UserCredential,
 } from "firebase/auth";
-import { signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useCallback, useState } from "react";
 
 export type AuthActionHook<M> = [
   M,
   UserCredential | undefined,
   boolean,
+  OAuthCredential | null | undefined,
   AuthError | undefined,
 ];
 export type SignInWithPopupHook = AuthActionHook<
   (
     scopes?: string[],
     customOAuthParameters?: CustomParameters,
-  ) => Promise<UserCredential | undefined>
+  ) => Promise<UserCredential | null | undefined>
 >;
 
-const useSignInWithPopup = (
-  auth: Auth,
-  createProvider: (
-    scopes?: string[],
-    customOAuthParameters?: CustomParameters,
-  ) => AuthProvider,
-): SignInWithPopupHook => {
+export const useSignInGoogle = (auth: Auth): SignInWithPopupHook => {
   const [error, setError] = useState<AuthError>();
-  const [loggedInUser, setLoggedInUser] = useState<UserCredential>();
+  const [user, setUser] = useState<UserCredential>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [oauth, setOAuth] = useState<OAuthCredential | null>();
 
-  const sign = useCallback(
-    async (scopes?: string[], customOAuthParameters?: CustomParameters) => {
-      setLoading(true);
-      setError(undefined);
-      try {
-        const provider = createProvider(scopes, customOAuthParameters);
-        const user = await signInWithPopup(auth, provider);
-        setLoggedInUser(user);
+  const sign = useCallback(async () => {
+    const provider = new GoogleAuthProvider();
+    setLoading(true);
+    setError(undefined);
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const oauth = GoogleAuthProvider.credentialFromResult(result);
+      setUser(result);
+      setOAuth(oauth);
 
-        return user;
-      } catch (err) {
-        setError(err as AuthError);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [auth, createProvider],
-  );
+      return result;
+    } catch (err) {
+      setError(err as AuthError);
+    } finally {
+      setLoading(false);
+    }
+  }, [auth]);
 
-  return [sign, loggedInUser, loading, error];
+  return [sign, user, loading, oauth, error];
 };
 
-export const useSignInWithGoogle = (auth: Auth): SignInWithPopupHook => {
-  const createGoogleAuthProvider = useCallback(
-    (scopes?: string[], customOAuthParameters?: CustomParameters) => {
-      if (scopes) {
-        scopes.forEach((scope) => googleProvider.addScope(scope));
-      }
-      if (customOAuthParameters) {
-        googleProvider.setCustomParameters(customOAuthParameters);
-      }
-      return googleProvider;
-    },
-    [],
-  );
-  return useSignInWithPopup(auth, createGoogleAuthProvider);
-};
+// export const useSignInWithGoogle_ = (auth: Auth): SignInWithPopupHook => {
+//   const createGoogleAuthProvider = useCallback(
+//     (scopes?: string[], customOAuthParameters?: CustomParameters) => {
+//       if (scopes) {
+//         scopes.forEach((scope) => googleProvider.addScope(scope));
+//       }
+//       if (customOAuthParameters) {
+//         googleProvider.setCustomParameters(customOAuthParameters);
+//       }
+//       return googleProvider;
+//     },
+//     [],
+//   );
+//   return useSignInWithPopup(auth, createGoogleAuthProvider);
+// };
 
-export const useSignInWithGithub = (auth: Auth): SignInWithPopupHook => {
-  const createGithubAuthProvider = useCallback(
-    (scopes?: string[], customOAuthParameters?: CustomParameters) => {
-      if (scopes) {
-        scopes.forEach((scope) => githubProvider.addScope(scope));
-      }
-      if (customOAuthParameters) {
-        githubProvider.setCustomParameters(customOAuthParameters);
-      }
-      return githubProvider;
-    },
-    [],
-  );
-  return useSignInWithPopup(auth, createGithubAuthProvider);
-};
+// export const useSignInWithGithub = (auth: Auth): SignInWithPopupHook => {
+//   const createGithubAuthProvider = useCallback(
+//     (scopes?: string[], customOAuthParameters?: CustomParameters) => {
+//       if (scopes) {
+//         scopes.forEach((scope) => githubProvider.addScope(scope));
+//       }
+//       if (customOAuthParameters) {
+//         githubProvider.setCustomParameters(customOAuthParameters);
+//       }
+//       return githubProvider;
+//     },
+//     [],
+//   );
+//   return useSignInWithPopup(auth, createGithubAuthProvider);
+// };

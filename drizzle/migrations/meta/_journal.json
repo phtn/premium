@@ -1,0 +1,153 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1725272181697,
+      "tag": "0000_dear_sir_ram",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1725461404038,
+      "tag": "0001_volatile_adam_warlock",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1725461627859,
+      "tag": "0002_mighty_weapon_omega",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1725462283684,
+      "tag": "0003_shocking_ravenous",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1725462358303,
+      "tag": "0004_cynical_zarda",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1725462454969,
+      "tag": "0005_blue_natasha_romanoff",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1725463089103,
+      "tag": "0006_magical_living_lightning",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1725463423704,
+      "tag": "0007_fantastic_lady_ursula",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1725463496007,
+      "tag": "0008_volatile_mother_askani",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1725463651149,
+      "tag": "0009_gigantic_hannibal_king",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1725463708680,
+      "tag": "0010_optimal_spyke",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1725463778039,
+      "tag": "0011_ancient_black_tarantula",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1725463852662,
+      "tag": "0012_wealthy_golden_guardian",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1725498986521,
+      "tag": "0013_dusty_toro",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1725499523326,
+      "tag": "0014_next_fantastic_four",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1725499627818,
+      "tag": "0015_hesitant_mariko_yashida",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1725499697913,
+      "tag": "0016_wonderful_black_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1725499718036,
+      "tag": "0017_large_salo",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "6",
+      "when": 1725499910138,
+      "tag": "0018_majestic_the_phantom",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1725499936804,
+      "tag": "0019_purple_moon_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1725499951509,
+      "tag": "0020_fine_mindworm",
+      "breakpoints": true
+    }
+  ]
+}

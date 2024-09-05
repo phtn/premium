@@ -35,7 +35,6 @@ export const errHandler =
   (e: T) => {
     onError("Panic!");
     setLoading(false);
-    console.log(e);
     if (setError) setError(e);
   };
 export const okHandler =
@@ -44,16 +43,21 @@ export const okHandler =
     setResult?: Dispatch<SetStateAction<T>>,
   ) =>
   (res: T) => {
-    console.log(res);
     if (setResult) {
       setResult(res);
     }
     setLoading(false);
-    onSuccess("Success!");
+    onSuccess("Successful");
+  };
+
+export const Ok =
+  (setLoading: Dispatch<SetStateAction<boolean>>, ...args: string[]) =>
+  () => {
+    setLoading(false);
+    onSuccess(`${args[0]} ${args[1] ?? ""}`);
   };
 
 export const opts = (...args: ReactElement[]) => {
-  if (!args[1]) return null;
   return new Map([
     [true, args[0]],
     [false, args[1]],

@@ -1,5 +1,5 @@
 import { initializeApp as init } from "firebase/app";
-import { getAuth, GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { env } from "@/env";
 
 const config = {
@@ -14,5 +14,3 @@ const config = {
 
 const app = init(config);
 export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
-export const githubProvider = new GithubAuthProvider();

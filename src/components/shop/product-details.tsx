@@ -1,8 +1,8 @@
-import { type Product } from "@/types/shop";
 import ProductImage from "./product-image";
 import AddToCartButton from "./add-to-cart";
+import { type SelectProduct } from "@/server/db/schema";
 
-export async function ProductDetails({ product }: { product: Product }) {
+export async function ProductDetails({ product }: { product: SelectProduct }) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -12,8 +12,8 @@ export async function ProductDetails({ product }: { product: Product }) {
           <p className="mb-4 text-xl font-semibold">
             ${product.price.toFixed(2)}
           </p>
-          <p className="mb-6">{product.id}</p>
-          <AddToCartButton productId={product.id} />
+          <p className="mb-6">{product.productId}</p>
+          <AddToCartButton productId={product.productId} />
         </div>
       </div>
     </div>

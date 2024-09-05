@@ -10,11 +10,8 @@ import { errHandler } from "../helpers";
 type AuthStateOptions = {
   onUserChanged?: (user: User | null) => Promise<void>;
 };
-interface AuthStateHook {
-  auth: Auth;
-  options?: AuthStateOptions;
-}
-export const useAuthState = ({ auth, options }: AuthStateHook) => {
+
+export const useAuthState = (auth: Auth, options?: AuthStateOptions) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AuthError | undefined>();
   const [user, setUser] = useState<User | null>(auth.currentUser);

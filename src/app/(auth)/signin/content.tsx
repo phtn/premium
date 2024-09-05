@@ -5,42 +5,31 @@ import {
   EnvelopeIcon,
   LockClosedIcon,
 } from "@heroicons/react/24/outline";
-import { Tabs, Tab, Input, Button, Link, Skeleton } from "@nextui-org/react";
+import { Tabs, Tab, Input, Button, Link } from "@nextui-org/react";
 import {
   type ChangeEvent,
   type Key,
   type KeyboardEvent,
-  useEffect,
   useMemo,
   useState,
   useCallback,
-  Suspense,
 } from "react";
 import { GoogleSignin } from "./google";
-import { useAuthState } from "@/utils/hooks/authState";
-import { auth } from "@/lib/firebase/config";
 import { Logo } from "@/components/app/logo";
 
 export const Lobby = () => {
-  const { user, loading, error } = useAuthState({ auth });
-
-  useEffect(() => {
-    console.log(user, loading, error);
-  }, [user, error, loading]);
   return (
-    <div className="inset-0 grid h-screen w-full grid-cols-2 gap-8 bg-gradient-to-br  from-sky-900/20 to-transparent shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)]  portrait:flex">
+    <div className="inset-0 grid h-screen w-full grid-cols-2 gap-8 bg-gradient-to-br from-sky-900/20 to-transparent shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)]  portrait:flex">
       <div className="flex w-full items-center justify-center bg-white md:rounded-r-[42px]">
         <div className="h-screen">
-          <div className="h-48 py-4">
+          <div className="h-36 py-4 md:h-48 portrait:w-screen portrait:px-10">
             <Brand />
           </div>
 
           <div className="h-24">
             <Heading />
           </div>
-          <Suspense fallback={<Skeleton />}>
-            <LoginForm />
-          </Suspense>
+          <LoginForm />
         </div>
       </div>
 
@@ -126,9 +115,9 @@ const LoginForm = () => {
   );
 
   return (
-    <div className="flex w-full flex-col items-center">
-      <div className="h-[400px] w-[340px] max-w-full">
-        <div className="overflow-hidden">
+    <div className="flex w-full flex-col items-center px-2">
+      <div className="h-[400px] max-w-full md:w-[340px]">
+        <div className="w-full flex flex-col items-center justify-center overflow-hidden">
           <Tabs
             fullWidth
             size="lg"
@@ -137,7 +126,7 @@ const LoginForm = () => {
             onSelectionChange={onSelect}
             color="secondary"
             variant="solid"
-            className="py-1"
+            className="max-w-[300px] py-1 portrait:max-w-[250px]"
           >
             <Tab
               key="email"
@@ -145,38 +134,44 @@ const LoginForm = () => {
               className="text-sm font-semibold tracking-tighter"
             >
               <form className="flex flex-col gap-10 py-4">
-                <div className="space-y-3">
+                <div className="space-y-3 md:min-w-[325px]">
                   <Input
                     size="lg"
                     startContent={
-                      <EnvelopeIcon className="ml-3 mr-4 size-5 text-sky-800/80" />
+                      <EnvelopeIcon className="ml-3 mr-4 size-5 text-gray-800/80" />
                     }
                     isRequired
                     placeholder=""
                     type="email"
+                    className="animate-enter"
                   />
                   <Input
                     size="lg"
                     startContent={
-                      <LockClosedIcon className="ml-3 mr-4 size-5 text-sky-800/80" />
+                      <LockClosedIcon className="ml-3 mr-4 size-5 text-gray-800/80" />
                     }
                     isRequired
                     placeholder=""
                     type="password"
-                    className="text-sm"
+                    className="animate-enter text-sm delay-100"
                   />
                 </div>
-                <div className="space-y-4">
-                  <Button size="lg" fullWidth color="primary">
+                <div className="space-y-4 portrait:mx-4">
+                  <Button
+                    size="lg"
+                    fullWidth
+                    color="primary"
+                    className="animate-enter delay-300"
+                  >
                     Login
                   </Button>
                   <GoogleSignin />
                 </div>
-                <div className="flex w-full items-center justify-center space-x-3 text-xs font-thin ">
+                <div className="flex w-full items-center justify-center space-x-3 py-6 text-xs font-thin ">
                   <Link
                     size="sm"
                     onPress={() => setSelected("login")}
-                    className="font-normal"
+                    className="animate-enter font-normal delay-700 duration-500 ease-out"
                   >
                     Login
                   </Link>
@@ -184,7 +179,7 @@ const LoginForm = () => {
                   <Link
                     size="sm"
                     onPress={() => setSelected("login")}
-                    className="font-normal"
+                    className="animate-enter font-normal delay-500 duration-400 ease-out"
                   >
                     Account Recovery
                   </Link>
@@ -197,12 +192,12 @@ const LoginForm = () => {
               className="text-sm font-semibold tracking-tighter"
             >
               <form className="flex h-[320px] flex-col justify-between gap-4">
-                <div className="mt-4 space-y-4 rounded-xl border px-4 py-6">
+                <div className="mt-4 animate-enter space-y-4 rounded-2xl border-[0.33px] border-gray-400 bg-white px-2 py-6 shadow-sm">
                   <p className="font-normal">Type your phone number</p>
                   <div className="flex items-center space-x-4">
                     <Input
                       className={cn(
-                        "font-mono text-xl font-semibold tracking-widest text-gray-500 opacity-40 placeholder:text-gray-200",
+                        "animate-enter font-mono text-xl font-semibold tracking-widest text-gray-500 opacity-40 delay-100 placeholder:text-gray-200",
                         { "opacity-100": phoneNumber !== "" },
                       )}
                       startContent={
@@ -230,12 +225,13 @@ const LoginForm = () => {
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button
+                    size="lg"
+                    fullWidth
                     type="submit"
                     isLoading={false}
                     disabled={!isValidPhone}
-                    fullWidth
+                    className="animate-enter delay-200"
                     color={isValidPhone ? "primary" : "default"}
-                    size="lg"
                     variant={isValidPhone ? "shadow" : "solid"}
                   >
                     Sign in
@@ -248,7 +244,7 @@ const LoginForm = () => {
                   <Link
                     size="sm"
                     onPress={() => setSelected("login")}
-                    className="font-normal"
+                    className="animate-enter font-normal delay-500"
                   >
                     Login
                   </Link>

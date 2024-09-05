@@ -1,50 +1,73 @@
-import { createPayment } from "@/lib/paymongo/payment";
-import { createSource, retrieveSource } from "@/lib/paymongo/source";
+import { deleteCategory, getAllCategories } from "@/lib/db/category";
+import { deleteProduct, getAllProducts } from "@/lib/db/product";
+import { deleteUser, getAllUsers, updateUser } from "@/lib/db/user";
 import type {
-  CreatePaymentParams,
-  PaymentResource,
-} from "@/server/paymongo/resource/zod.payments";
-import type {
-  SourceResource,
-  CreateSourceParams,
-  RetrieveSourceParams,
-} from "@/server/paymongo/resource/zod.source";
-import { errHandler, okHandler } from "@/utils/helpers";
-import { useState } from "react";
+  SelectCategory,
+  SelectProduct,
+  SelectUser,
+} from "@/server/db/schema";
+import type { DeleteCategory } from "@/server/db/zod.category";
+import type { DeleteProduct } from "@/server/db/zod.product";
+import type { DeleteUser, UpdateUser } from "@/server/db/zod.user";
+import { errHandler } from "@/utils/helpers";
+import { useEffect, useState, cache } from "react";
 
-export default function usePaymongo() {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<SourceResource>({} as SourceResource);
-  const [payment, setPayment] = useState<PaymentResource>(
-    {} as PaymentResource,
-  );
-  const handleCreateSource = async (params: CreateSourceParams) => {
-    setLoading(true);
-    await createSource(params)
-      .then(okHandler<SourceResource>(setLoading, setResult))
-      .catch(errHandler(setLoading));
+const cachedGetAllUsers = cache(getAllUsers);
+const cachedGetAllCategories = cache(getAllCategories);
+const cachedGetAllProducts = cache(getAllProducts);
+
+export function useFetchDB() {
+  const [users, setUsers] = useState<SelectUser[] | undefined>();
+  const [categories, setCategories] = useState<SelectCategory[] | undefined>();
+  const [products, setProducts] = useState<SelectProduct[] | undefined>();
+
+  const getUsers = async () => {
+    const all = await cachedGetAllUsers();
+    setUsers(all);
   };
 
-  const handleRetrieveSource = async (params: RetrieveSourceParams) => {
-    setLoading(true);
-    await retrieveSource(params)
-      .then(okHandler<SourceResource>(setLoading, setResult))
-      .catch(errHandler(setLoading));
+  const getCategories = async () => {
+    const all = await cachedGetAllCategories();
+    setCategories(all);
   };
 
-  const handleCreatePayment = async (params: CreatePaymentParams) => {
-    setLoading(true);
-    await createPayment(params)
-      .then(okHandler<PaymentResource>(setLoading, setPayment))
-      .catch(errHandler(setLoading));
+  const getProducts = async () => {
+    const all = await cachedGetAllProducts();
+    setProducts(all);
   };
+
+  const deleteUserById = async (params: DeleteUser) => {
+    await deleteUser(params);
+  };
+
+  const updateUserById = async (params: UpdateUser) => {
+    await updateUser(params);
+  };
+
+  const deleteCategoryById = async (params: DeleteCategory) => {
+    await deleteCategory(params);
+  };
+
+  const deleteProductById = async (params: DeleteProduct) => {
+    await deleteProduct(params);
+  };
+
+  useEffect(() => {
+    getUsers().catch(errHandler);
+    getCategories().catch(errHandler);
+    getProducts().catch(errHandler);
+  }, []);
 
   return {
-    handleCreateSource,
-    loading,
-    handleRetrieveSource,
-    result,
-    handleCreatePayment,
-    payment,
+    users,
+    getUsers,
+    deleteUserById,
+    updateUserById,
+    categories,
+    getCategories,
+    deleteCategoryById,
+    products,
+    getProducts,
+    deleteProductById,
   };
 }

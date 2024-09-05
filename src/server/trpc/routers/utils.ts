@@ -5,6 +5,8 @@ import { procedure as p } from "..";
 export const procedure = <T extends ZodRawShape>(schema: ZodObject<T>) =>
   p.input(schema);
 
+export const queryAll = () => p;
+
 /** async/await wrapper */
 export const asyncFn =
   <TParams, TReturn>(fn: (params: TParams) => Promise<TReturn>) =>
@@ -18,5 +20,10 @@ interface RParams<T> {
 
 export const asyncR =
   <TParams, TReturn>(fn: (params: TParams) => Promise<TReturn>) =>
+  async ({ input }: RParams<TParams>) =>
+    await fn(input);
+
+export const asyncArr =
+  <TParams, TReturn>(fn: (params: TParams) => Promise<TReturn[]>) =>
   async ({ input }: RParams<TParams>) =>
     await fn(input);

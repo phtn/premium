@@ -1,4 +1,5 @@
 import {
+  Link,
   Navbar,
   NavbarBrand,
   NavbarContent,
@@ -8,6 +9,8 @@ import { LinkBtn } from "./buttons";
 import type { DualIcon } from "@/types";
 import { Logo } from "@/components/app/logo";
 import { easeOut, motion } from "framer-motion";
+import { useAuthState } from "@/utils/hooks/authState";
+import { auth } from "@/lib/firebase/config";
 
 interface Brand {
   label?: string;
@@ -29,24 +32,28 @@ interface TopbarProps {
   extras?: Extras[];
 }
 export function Topbar({ brand, links, extras }: TopbarProps) {
+  const { user } = useAuthState(auth);
+
   return (
     <Navbar shouldHideOnScroll isBlurred>
       <NavbarBrand>
-        <motion.div
-          initial={{
-            x: 5,
-          }}
-          transition={{
-            duration: 2,
-            easing: easeOut,
-          }}
-          animate={{ x: 0 }}
-        >
-          <Logo />
-        </motion.div>
-        <motion.div className="animate-enter mx-2 font-medium tracking-tighter text-gray-600 md:mx-4 portrait:text-sm">
-          {brand.label}
-        </motion.div>
+        <Link href="/">
+          <motion.div
+            initial={{
+              x: 5,
+            }}
+            transition={{
+              duration: 2,
+              easing: easeOut,
+            }}
+            animate={{ x: 0 }}
+          >
+            <Logo />
+          </motion.div>
+          <motion.div className="mx-4 animate-enter font-medium tracking-tighter text-gray-600 md:mx-4 portrait:text-sm">
+            {brand.label}
+          </motion.div>
+        </Link>
       </NavbarBrand>
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
         {links?.map((link, i) => (
@@ -77,8 +84,8 @@ export function Topbar({ brand, links, extras }: TopbarProps) {
             <LinkBtn
               isIconOnly={extra.type === "icon"}
               icon={extra.icon}
-              label={extra.label}
-              href={extra.href}
+              label={user?.displayName ?? extra.label}
+              href={user ? "/account" : extra.href}
             ></LinkBtn>
           </NavbarItem>
         ))}

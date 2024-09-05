@@ -3,13 +3,15 @@ import { type StickyScrollContent } from "@/components/ui/sticky-reveal";
 import { type TabItem } from "@/components/ui/tabs";
 import type { Extras, TopbarLink } from "@/components/ui/topbar";
 
+export const brand = {
+  label: "Accessability Aid",
+};
 export const links: TopbarLink[] = [
   // {
   //   label: "services",
   //   href: "#",
   // },
 ];
-
 export const extras: Extras[] = [
   {
     label: "Sign in",
@@ -22,6 +24,7 @@ export const extras: Extras[] = [
   // },
 ];
 
+export const topbarProps = { brand, links, extras };
 export const actions: Action[] = [
   { type: "primary", label: "Get full access", href: "/shop" },
   { type: "default", label: "Learn more", href: "/shop/electronics" },

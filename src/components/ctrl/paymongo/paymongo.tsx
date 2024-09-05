@@ -1,5 +1,5 @@
 import { Button } from "@nextui-org/button";
-import usePaymongo from "../hooks";
+import { usePaymongo } from "./hook";
 import type { CreateSourceParams } from "@/server/paymongo/resource/zod.source";
 import { Code } from "@nextui-org/react";
 import { type CreatePaymentParams } from "@/server/paymongo/resource/zod.payments";

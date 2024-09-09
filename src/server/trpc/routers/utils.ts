@@ -23,6 +23,13 @@ export const asyncR =
   async ({ input }: RParams<TParams>) =>
     await fn(input);
 
+export const asyncRx =
+  <TParams, TReturn>(fn: (params: TParams) => Promise<TReturn>) =>
+  async ({ input }: RParams<TParams>) => {
+    const result = await fn(input);
+    return JSON.stringify(result);
+  };
+
 export const asyncArr =
   <TParams, TReturn>(fn: (params: TParams) => Promise<TReturn[]>) =>
   async ({ input }: RParams<TParams>) =>

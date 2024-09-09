@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 import { insertUser } from "@/lib/db/user";
 import { errHandler, Ok } from "@/utils/helpers";
 import { InsertUserSchema } from "@/server/db/zod.user";
-import type { InsertUser } from "@/server/db/schema";
+import type { InsertAdmin, InsertUser } from "@/server/db/schema";
 import {
   type InsertCategory,
   InsertCategorySchema,
@@ -14,6 +14,43 @@ import {
   InsertProductSchema,
 } from "@/server/db/zod.product";
 import { insertProduct } from "@/lib/db/product";
+import { InsertAdminSchema } from "@/server/db/zod.admin";
+import { insertAdmin } from "@/lib/db/admin";
+
+export function useAdminDB() {
+  const [validAdmin, setValidAdmin] = useState<boolean>(false);
+  const [admin, setAdmin] = useState<InsertAdmin>();
+  const [adminLoading, setLoading] = useState(false);
+  const [error, setError] = useState<Error>();
+
+  const createAdmin = () => {
+    const newAdmin = randomAdmin();
+    setAdmin(newAdmin);
+    setValidAdmin(InsertAdminSchema.safeParse(newAdmin).success);
+  };
+  const adminInsert = useCallback(() => {
+    setLoading(true);
+    if (!admin && !validAdmin) return;
+    insertAdmin(admin!)
+      .then(Ok(setLoading, admin?.displayName ?? "", "added"))
+      .catch(errHandler(setLoading, setError));
+  }, [admin, validAdmin]);
+
+  return { createAdmin, admin, validAdmin, adminInsert, adminLoading, error };
+}
+
+const randomAdmin = () =>
+  ({
+    userId: Date.now().toString(36),
+    displayName: faker.person.fullName(),
+    email: faker.internet.email().toLowerCase(),
+    phoneNumber: faker.phone.number(),
+    photoURL: faker.image.avatarGitHub(),
+    active: faker.datatype.boolean(),
+    createdBy: "xpriori",
+    master: false,
+    verified: false,
+  }) satisfies InsertAdmin;
 
 export function useUserDB() {
   const [validUser, setValidUser] = useState<boolean>(false);
@@ -74,9 +111,10 @@ export function useCatDB() {
 const randomCat = () =>
   ({
     categoryId: Date.now().toString(36),
-    name: faker.commerce.department(),
+    name: "skin care",
+    slug: "skin-care",
     description: faker.commerce.product(),
-    createdBy: faker.internet.userName(),
+    createdBy: "m0twy921",
     photoURL: faker.image.avatarGitHub(),
     remarks: faker.commerce.productAdjective(),
   }) satisfies InsertCategory;
@@ -114,12 +152,26 @@ export function useProductDB() {
 const randomProduct = () =>
   ({
     productId: Date.now().toString(36),
-    categoryId: "m0oo0wsa",
+    categoryId: "m0txakzd",
     price: parseFloat(faker.commerce.price()),
     stock: 10,
     active: true,
     name: faker.commerce.product(),
-    description: faker.commerce.productMaterial(),
+    slug: `skin-care/${faker.commerce.product().toLowerCase()}`,
+    description: faker.commerce.productDescription(),
+    material: faker.commerce.productMaterial(),
+    dimensions: faker.commerce.productAdjective(),
     remarks: faker.commerce.productAdjective(),
-    createdBy: faker.internet.userName(),
+    short: faker.commerce.productAdjective(),
+    createdBy: "m0twy921",
   }) satisfies InsertProduct;
+
+// const sendWebhook = async (endpoint: string, message: object) => {
+//   await fetch(endpoint, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "applicatin/json",
+//     },
+//     body: JSON.stringify(message),
+//   });
+// };

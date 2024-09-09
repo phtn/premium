@@ -4,7 +4,7 @@ export const Logo = () => {
   return (
     <Image
       alt="access-logo"
-      src="/svg/access_logo.svg"
+      src="/svg/re-up_admin_logo.svg"
       width={0}
       height={0}
       unoptimized

@@ -70,7 +70,7 @@ export function AdminBoard({ children }: PropsWithChildren) {
     },
     {
       label: "Payments",
-      href: "#",
+      href: "/admin/payments",
       icon: { type: "icon", content: CreditCardIcon },
     },
     {

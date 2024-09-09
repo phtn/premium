@@ -52,6 +52,7 @@ export const CreateSourceParamsSchema = z.object({
       currency: CurrencySchema,
       redirect: RedirectSchema,
       billing: BillingSchema.optional(),
+      metadata: z.record(z.string().or(z.number().or(z.boolean()))).optional(),
     }),
   }),
 });

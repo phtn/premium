@@ -1,16 +1,22 @@
-import { Skeleton } from "@nextui-org/react";
+import Image from "next/image";
 
 interface ProductImageProps {
-  src?: string;
+  src: string;
   className?: string;
 }
 
-function ProductImage({ className = "" }: ProductImageProps) {
+function ProductImage({ className = "", src }: ProductImageProps) {
   return (
     <div className={`relative ${className}`}>
-      <Skeleton className="w-3/5 rounded-lg">
-        <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
-      </Skeleton>
+      <Image
+        alt=""
+        src={src}
+        width={0}
+        height={0}
+        unoptimized
+        priority
+        className="w-auto md:h-72 lg:h-96"
+      />
     </div>
   );
 }

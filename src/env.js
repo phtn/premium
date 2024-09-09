@@ -21,6 +21,14 @@ export const env = createEnv({
     G_CLIENT_SECRET: z.string(),
 
     F_ADMIN: z.string(),
+
+    UPSTASH_VECTOR_REST_URL: z.string().url(),
+    UPSTASH_VECTOR_REST_TOKEN: z.string(),
+    UPSTASH_REDIS_REST_URL: z.string(),
+    UPSTASH_REDIS_REST_TOKEN: z.string(),
+    UPSTASH_EMAIL: z.string().email(),
+    UPSTASH_API_K: z.string(),
+    QSTASH_TOKEN: z.string(),
   },
 
   /**
@@ -53,6 +61,14 @@ export const env = createEnv({
 
     G_WEB_CLIENT_ID: process.env.G_WEB_CLIENT_ID,
     G_CLIENT_SECRET: process.env.G_CLIENT_SECRET,
+
+    UPSTASH_VECTOR_REST_URL: process.env.UPSTASH_VECTOR_REST_URL,
+    UPSTASH_VECTOR_REST_TOKEN: process.env.UPSTASH_VECTOR_REST_TOKEN,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    UPSTASH_EMAIL: process.env.UPSTASH_EMAIL,
+    UPSTASH_API_K: process.env.UPSTASH_API_K,
+    QSTASH_TOKEN: process.env.QSTASH_TOKEN,
 
     NEXT_PUBLIC_F_API_KEY: process.env.NEXT_PUBLIC_F_API_KEY,
     NEXT_PUBLIC_F_AUTH_DOMAIN: process.env.NEXT_PUBLIC_F_AUTH_DOMAIN,

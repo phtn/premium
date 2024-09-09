@@ -1,5 +1,4 @@
 import Link from "next/link";
-// import { getProductsByCategory } from "@/lib/static-api/get";
 import ProductImage from "./product-image";
 import type { SelectProduct, SelectCategory } from "@/server/db/schema";
 
@@ -16,7 +15,7 @@ async function CategoryListing(props: {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {products?.map((product) => (
           <Link
-            href={`/shop/${product.name}`}
+            href={`/shop/${product.slug}`}
             key={product.productId}
             className="group"
           >

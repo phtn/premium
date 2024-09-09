@@ -12,6 +12,7 @@ export function Providers({ children }: PropsWithChildren) {
           gutter={10}
           toastOptions={{
             position: "top-center",
+            duration: 3000,
             success: {
               style: {
                 background: "#191818",

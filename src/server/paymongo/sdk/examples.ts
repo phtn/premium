@@ -46,7 +46,8 @@ export const payment_params_complete: CreatePaymentParams = {
 
 export const checkout_resource_complete: CheckoutResource = {
   data: {
-    checkout_session_id: "02",
+    id: "02",
+    type: "checkout_session",
     attributes: {
       cancel_url: "http://re-up.ph",
       billing: {

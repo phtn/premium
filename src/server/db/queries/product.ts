@@ -13,7 +13,7 @@ export const getProduct = asyncFn((params: GetProduct) =>
 );
 
 export const deleteProduct = asyncFn((params: DeleteProduct) =>
-  db.delete(products).where(eq(products.productId, params.productId)),
+  db.delete(products).where(eq(products.productId, params.productId)).run(),
 );
 
 export const updateProduct = asyncFn((params: UpdateProduct) =>

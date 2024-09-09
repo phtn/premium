@@ -1,4 +1,3 @@
-import { fontFamily } from "tailwindcss/defaultTheme";
 // import svgToDataUri from "mini-svg-data-uri";
 import tailwindcssAnimate from "tailwindcss-animate";
 import { nextui } from "@nextui-org/theme";
@@ -59,6 +58,12 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)"],
+        mono: ["var(--font-geist-mono)"],
+        sarabun: ["var(--font-sarabun)"],
+        ibm: ["var(--font-ibm)"],
+      },
       colors: {
         paper: "#F8F8F8",
         prime: "#3b82f6",
@@ -84,15 +89,23 @@ export default {
         "pos-0": "0% 0%",
         "pos-100": "100% 100%",
       },
-      fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
-      },
+
       animation: {
         enter: "enter 0.275s ease-out normal both",
         back: "back 0.25s ease-out normal both",
         shimmer: "shimmer 5s linear infinite",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
       keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
         back: {
           "0%": {
             opacity: "0",

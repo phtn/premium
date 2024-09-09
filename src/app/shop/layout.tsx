@@ -6,20 +6,9 @@ import { topbarProps } from "../static";
 const ShopLayout = ({ children }: PropsWithChildren) => {
   const Navbar = useMemo(() => <Topbar {...topbarProps} />, []);
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-default-200 to-default-50">
+    <div className="flex w-full flex-col items-center bg-gradient-to-b from-zinc-50 from-15% to-transparent to-60%">
       {Navbar}
-      <div className="container mx-auto flex h-[calc(100vh*0.2)] w-full flex-col justify-end space-y-4 p-6 px-4 py-8 text-neutral-950">
-        <h1 className="font-sans text-3xl tracking-tighter">
-          What&apos;s next?
-        </h1>
-        <div>
-          <p className="text-xs font-light tracking-tight">
-            From community favourites to about-to-sell-out items, see them all.
-            here
-          </p>
-        </div>
-      </div>
-      {children}
+      <div className="w-[80rem] overflow-clip">{children}</div>
     </div>
   );
 };

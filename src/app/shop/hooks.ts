@@ -6,34 +6,39 @@ import {
   type SelectProduct,
   type SelectUser,
 } from "@/server/db/schema";
-import { errHandler } from "@/utils/helpers";
-import { useEffect, useState } from "react";
+import { asyncSet, errHandler } from "@/utils/helpers";
+import { useCallback, useEffect, useState } from "react";
 
 export default function useDb() {
   const [users, setUsers] = useState<SelectUser[] | undefined>();
   const [categories, setCategories] = useState<SelectCategory[] | undefined>();
   const [products, setProducts] = useState<SelectProduct[] | undefined>();
+  const [loading, setLoading] = useState(false);
 
-  const getUsers = async () => {
-    const all = await getAllUsers();
-    setUsers(all);
-  };
-
-  const getCategories = async () => {
-    const all = await getAllCategories();
-    setCategories(all);
-  };
-
-  const getProducts = async () => {
-    const all = await getAllProducts();
-    setProducts(all);
-  };
+  const getUsers = useCallback(() => asyncSet(setUsers, getAllUsers), []);
+  const getCategories = useCallback(
+    () => asyncSet(setCategories, getAllCategories),
+    [],
+  );
+  const getProducts = useCallback(
+    () => asyncSet(setProducts, getAllProducts),
+    [],
+  );
 
   useEffect(() => {
-    getUsers().catch(errHandler);
-    getCategories().catch(errHandler);
-    getProducts().catch(errHandler);
-  }, []);
+    setLoading(true);
+    Promise.all([getUsers(), getCategories(), getProducts().catch(errHandler)])
+      .then(() => setLoading(false))
+      .catch(errHandler(setLoading));
+  }, [getUsers, getProducts, getCategories]);
 
-  return { users, getUsers, categories, getCategories, products, getProducts };
+  return {
+    users,
+    getUsers,
+    categories,
+    getCategories,
+    products,
+    getProducts,
+    loading,
+  };
 }

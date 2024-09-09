@@ -26,7 +26,7 @@ export const LineItemSchema = z.object({
   amount: z.number(),
   currency: z.literal("PHP"),
   description: z.string(),
-  images: z.array(z.string()),
+  images: z.array(z.string()).optional(),
   name: z.string(),
   quantity: z.number(),
 });
@@ -59,7 +59,8 @@ export type CheckoutParams = z.infer<typeof CheckoutParamsSchema>;
 // The complete cs_resource schema
 export const CheckoutResourceSchema = z.object({
   data: z.object({
-    checkout_session_id: z.string(),
+    id: z.string(),
+    type: z.literal("checkout_session"),
     attributes: z.object({
       billing: BillingSchema,
       billing_information_fields_editable: z.literal("enabled"),
@@ -74,7 +75,7 @@ export const CheckoutResourceSchema = z.object({
       payment_intent: PaymentIntentResourceSchema,
       payment_method_types: PaymentMethodTypeList,
       reference_number: z.string(),
-      send_email_receipt: z.boolean().default(false),
+      send_email_receipt: z.boolean().default(true),
       show_description: z.boolean().default(true),
       show_line_items: z.boolean().default(true),
       status: z.union([z.literal("active"), z.literal("inactive")]),

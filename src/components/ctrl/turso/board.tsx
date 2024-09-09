@@ -1,5 +1,5 @@
 import { Button, Tab, Tabs } from "@nextui-org/react";
-import Json from "react-json-view";
+import Json from "@/components/ui/json-view";
 import {
   type MemoExoticComponent,
   type ReactElement,
@@ -11,7 +11,7 @@ import {
 } from "react";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useCatDB, useProductDB, useUserDB } from "./hook";
+import { useAdminDB, useCatDB, useProductDB, useUserDB } from "./hook";
 import { HashtagIcon } from "@heroicons/react/24/outline";
 
 export interface CTRLTabItem {
@@ -57,39 +57,42 @@ export function CTRLBoard({ children }: CTRLTabProps) {
   );
 }
 
+function AdminTab() {
+  const { createAdmin, admin, validAdmin, adminInsert, adminLoading, error } =
+    useAdminDB();
+  const handleAdminInsert = () => adminInsert();
+  return (
+    <div className="overflow-auto md:w-[calc(100vw/2.85)]">
+      <div className="h-[420px] overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
+        <Header
+          createFn={createAdmin}
+          insertFn={handleAdminInsert}
+          isLoading={adminLoading}
+          isValid={validAdmin}
+        />
+        <div className="h-6" />
+        <Result list={admin} error={error} />
+      </div>
+    </div>
+  );
+}
+export const AdminContent = memo(AdminTab);
+
 function UserTab() {
-  const { createUser, user, validUser, userInsert, userLoading } = useUserDB();
+  const { createUser, user, validUser, userInsert, userLoading, error } =
+    useUserDB();
   const handleUserInsert = () => userInsert();
   return (
-    <div className="overflow-auto md:w-[calc(100vw/3)]">
+    <div className="overflow-auto md:w-[calc(100vw/2.85)]">
       <div className="h-[420px] overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
-        <div className="flex items-center space-x-4">
-          <div className="flex min-w-36 items-center justify-between space-x-4">
-            <p className="text-xs font-medium tracking-tighter">User Schema</p>
-            <HashtagIcon className="size-4 text-primary" />
-          </div>
-          <Button
-            size="sm"
-            color="secondary"
-            onClick={createUser}
-            className="shadow-sm"
-          >
-            Create New
-          </Button>
-          <Button
-            size="sm"
-            className="shadow-sm"
-            isLoading={userLoading}
-            onClick={handleUserInsert}
-            disabled={!validUser}
-            color={validUser ? "primary" : "default"}
-          >
-            Insert
-          </Button>
-        </div>
+        <Header
+          createFn={createUser}
+          insertFn={handleUserInsert}
+          isLoading={userLoading}
+          isValid={validUser}
+        />
         <div className="h-6" />
-
-        <Json theme={"rjv-default"} src={{ ...user }} />
+        <Result list={user} error={error} />
       </div>
     </div>
   );
@@ -100,37 +103,16 @@ function CatTab() {
   const { createCat, cat, validCat, catInsert, catLoading, error } = useCatDB();
   const handleCatInsert = () => catInsert();
   return (
-    <div className="overflow-auto md:w-[calc(100vw/3)]">
+    <div className="overflow-auto md:w-[calc(100vw/2.85)]">
       <div className="h-[420px] overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
-        <div className="flex items-center space-x-4">
-          <div className="flex min-w-36 items-center justify-between space-x-4">
-            <p className="text-xs font-medium tracking-tighter">
-              Category Schema
-            </p>
-            <HashtagIcon className="size-4 text-primary" />
-          </div>
-          <Button
-            size="sm"
-            color="secondary"
-            onClick={createCat}
-            className="shadow-sm"
-          >
-            Create New
-          </Button>
-          <Button
-            size="sm"
-            className="shadow-sm"
-            isLoading={catLoading}
-            onClick={handleCatInsert}
-            disabled={!validCat}
-            color={validCat ? "primary" : "default"}
-          >
-            Insert
-          </Button>
-        </div>
+        <Header
+          createFn={createCat}
+          insertFn={handleCatInsert}
+          isLoading={catLoading}
+          isValid={validCat}
+        />
         <div className="h-6" />
-        <Json theme={"rjv-default"} src={{ ...cat }} />
-        {error ? <Json theme={"rjv-default"} src={{ ...error }} /> : null}
+        <Result list={cat} error={error} />
       </div>
     </div>
   );
@@ -148,44 +130,89 @@ function ProductTab() {
   } = useProductDB();
   const handleProductInsert = () => productInsert();
   return (
-    <div className="overflow-auto md:w-[calc(100vw/3)]">
+    <div className="overflow-auto md:w-[calc(100vw/2.85)]">
       <div className="h-[420px] overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
-        <div className="flex items-center space-x-4">
-          <div className="flex min-w-36 items-center justify-between space-x-4">
-            <p className="text-xs font-medium tracking-tighter">
-              Product Schema
-            </p>
-            <HashtagIcon className="size-4 text-primary" />
-          </div>
-          <Button
-            size="sm"
-            color="secondary"
-            onClick={createProduct}
-            className="shadow-sm"
-          >
-            Create New
-          </Button>
-          <Button
-            size="sm"
-            className="shadow-sm"
-            isLoading={productLoading}
-            onClick={handleProductInsert}
-            disabled={!validProduct}
-            color={validProduct ? "primary" : "default"}
-          >
-            Insert
-          </Button>
-        </div>
+        <Header
+          createFn={createProduct}
+          insertFn={handleProductInsert}
+          isLoading={productLoading}
+          isValid={validProduct}
+        />
         <div className="h-6" />
-        <Json theme={"rjv-default"} src={{ ...product }} />
-        {error ? <Json theme={"rjv-default"} src={{ ...error }} /> : null}
+        <Result list={product} error={error} />
       </div>
     </div>
   );
 }
 export const ProductContent = memo(ProductTab);
 
+const Title = (props: { title: string }) => (
+  <div className="flex min-w-28 items-center justify-between space-x-4 whitespace-nowrap">
+    <p className="text-xs font-medium capitalize tracking-tighter">
+      {props.title} Schema
+    </p>
+    <HashtagIcon className="size-4 text-primary" />
+  </div>
+);
+
+interface HeaderProps {
+  createFn: VoidFunction;
+  insertFn: VoidFunction;
+  isLoading: boolean;
+  isValid: boolean;
+  children?: ReactNode;
+}
+const Header = ({
+  createFn,
+  insertFn,
+  isLoading,
+  isValid,
+  children,
+}: HeaderProps) => {
+  return (
+    <div className="flex items-center space-x-4">
+      <Title title={"user"} />
+      <Button
+        size="sm"
+        color="secondary"
+        onClick={createFn}
+        className="shadow-sm"
+      >
+        Create New
+      </Button>
+      <Button
+        size="sm"
+        className="shadow-sm"
+        isLoading={isLoading}
+        onClick={insertFn}
+        disabled={!isValid}
+        color={isValid ? "primary" : "default"}
+      >
+        Insert
+      </Button>
+      {children}
+    </div>
+  );
+};
+
+const Result = (props: {
+  list: object | undefined;
+  error: object | undefined;
+}) => (
+  <div>
+    <Json src={{ ...props.list }} />
+    {props.error ? <Json src={{ ...props.error }} /> : null}
+  </div>
+);
+
 const tabs: CTRLTabItem[] = [
+  {
+    id: 3,
+    href: "/master",
+    value: "admin",
+    label: "Admin",
+    content: AdminContent,
+  },
   {
     id: 0,
     href: "/user",

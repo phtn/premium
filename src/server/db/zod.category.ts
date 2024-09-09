@@ -4,6 +4,7 @@ export const InsertCategorySchema = z.object({
   categoryId: z.string(),
   createdBy: z.string(),
   name: z.string(),
+  slug: z.string().nullable(),
   description: z.string().nullable(),
   photoURL: z.string().url().nullable(),
   liveMode: z.boolean().default(false).optional(),
@@ -30,6 +31,7 @@ export const UpdateCategorySchema = z.object({
     description: z.string().nullable().optional(),
     liveMode: z.boolean().optional(),
     photoURL: z.string().url().optional(),
+    slug: z.string().optional(),
   }),
 });
 export type UpdateCategory = z.infer<typeof UpdateCategorySchema>;

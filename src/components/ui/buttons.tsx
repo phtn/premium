@@ -18,11 +18,11 @@ export const LinkBtn = forwardRef<HTMLButtonElement, LinkBtnProps>(
         href={props.href}
         as={Link}
         color="secondary"
-        className="flex items-center space-x-2 bg-transparent capitalize tracking-tighter hover:text-sky-600 portrait:text-sm"
+        className="flex items-center space-x-2 bg-transparent font-light capitalize tracking-tighter hover:text-sky-600 portrait:text-sm"
       >
-        {props.icon && <props.icon className={"size-5"} />}
+        {props.icon && <props.icon className={"size-6 shrink-0"} />}
+        <div className="px-1">{props?.children}</div>
         {props.label}
-        {props?.children}
       </Button>
     );
   },

@@ -43,14 +43,14 @@ export function Topbar({ brand, links, extras }: TopbarProps) {
               x: 5,
             }}
             transition={{
-              duration: 2,
+              duration: 3,
               easing: easeOut,
             }}
             animate={{ x: 0 }}
           >
             <Logo />
           </motion.div>
-          <motion.div className="mx-4 animate-enter font-medium tracking-tighter text-gray-600 md:mx-4 portrait:text-sm">
+          <motion.div className="mx-4 animate-enter font-medium tracking-tighter text-gray-800 md:mx-4 portrait:text-sm">
             {brand.label}
           </motion.div>
         </Link>
@@ -84,9 +84,18 @@ export function Topbar({ brand, links, extras }: TopbarProps) {
             <LinkBtn
               isIconOnly={extra.type === "icon"}
               icon={extra.icon}
-              label={user?.displayName ?? extra.label}
+              label={
+                extra.type === "icon" ? "" : (user?.displayName ?? extra.label)
+              }
               href={user ? "/account" : extra.href}
-            ></LinkBtn>
+              className="shrink-0 px-2"
+            >
+              {extra.type === "icon" ? (
+                <div className="-ml-5 mb-2 flex size-[24px] animate-enter items-center justify-center rounded-full border-[3px] border-white bg-gray-800 font-ibm text-[10px] font-medium text-white shadow-md">
+                  <p>4</p>
+                </div>
+              ) : null}
+            </LinkBtn>
           </NavbarItem>
         ))}
       </NavbarContent>

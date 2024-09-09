@@ -119,12 +119,22 @@ export const HeroLight = (props: HeroProps) => {
             </div>
           </div>
         </div>
-        <div className="relative inset-0 hidden items-end rounded-3xl rounded-t-[256px] bg-gradient-to-br from-sky-900/20 to-transparent text-gray-800 shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)] lg:flex">
-          <div className="center h-72 w-full bg-[url('/svg/opera_v2.svg')] bg-cover bg-bottom" />
-          <div className="absolute -left-[30px] -top-[70px] z-30 h-[75px] w-[150px] bg-[url('/svg/qantas.svg')] bg-contain bg-center bg-no-repeat" />
-          <div className="absolute right-0 z-50 m-4 h-[150px] w-[180px] animate-enter bg-[url('/svg/stamp.svg')] bg-contain bg-center bg-no-repeat opacity-60 delay-1000" />
-        </div>
+        <StoreImage />
       </div>
     </div>
   );
 };
+
+// const AccessAU = () => (
+//   <div className="relative inset-0 hidden items-end rounded-3xl rounded-t-[256px] bg-gradient-to-br from-sky-900/20 to-transparent text-gray-800 shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)] lg:flex">
+//     <div className="center h-72 w-full bg-[url('/svg/opera_v2.svg')] bg-cover bg-bottom" />
+//     <div className="absolute -left-[30px] -top-[70px] z-30 h-[75px] w-[150px] bg-[url('/svg/qantas.svg')] bg-contain bg-center bg-no-repeat" />
+//     <div className="absolute right-0 z-50 m-4 h-[150px] w-[180px] animate-enter bg-[url('/svg/stamp.svg')] bg-contain bg-center bg-no-repeat opacity-60 delay-1000" />
+//   </div>
+// );
+
+const StoreImage = () => (
+  <div className="relative inset-0 hidden items-end rounded-3xl rounded-t-[256px] bg-gradient-to-br from-sky-900/20 to-transparent text-gray-800 shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)] lg:flex">
+    <div className="-mb-4 h-80 w-full bg-[url('/store_v2.webp')] bg-cover bg-bottom" />
+  </div>
+);

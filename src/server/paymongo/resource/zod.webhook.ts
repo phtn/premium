@@ -2,11 +2,11 @@ import { z } from "zod";
 
 export const webhookResource = {
   data: {
-    id: "hook_asgZnJ2LUPUzuuFpT5j66ton",
+    id: "hook_id",
     type: "webhook",
     attributes: {
       livemode: true,
-      secret_key: "whsk_Cq2e2jxvuen6SoJd9RPu4ccn",
+      secret_key: "sk",
       status: "enabled",
       url: "https://mywebsite:3000/webhooks",
       events: ["source.chargeable", "payment.paid", "payment.failed"],
@@ -33,7 +33,6 @@ export const WebhookResourceSchema = z.object({
 });
 export type WebhookResource = z.infer<typeof WebhookResourceSchema>;
 
-// hook_TmmLbwcncmrdfE7bpkRjCCZS
 export const WebhookEvents = z.union([
   z.literal("source.chargaeble"),
   z.literal("payment.paid"),

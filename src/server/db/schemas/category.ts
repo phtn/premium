@@ -4,6 +4,8 @@ import { admins } from "./admin";
 
 export const categories = sqliteTable("category", {
   categoryId: text("categoryId").primaryKey().notNull(),
+  subcategory: text("subcategory"),
+  demographic: text("demographic"),
   name: text("name").notNull(),
   description: text("description"),
   photoURL: text("photoURL"),

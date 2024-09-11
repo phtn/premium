@@ -194,6 +194,10 @@ export default {
               DEFAULT: "#ffffff",
               foreground: "#030712",
             },
+            warning: {
+              DEFAULT: "#1f2937",
+              foreground: "#e0f2fe",
+            },
             default: { DEFAULT: "#e6ebef", foreground: "#030712" },
             foreground: "#030712",
             background: "#ffffff",

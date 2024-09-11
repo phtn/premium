@@ -1,8 +1,9 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { Button } from "@nextui-org/button";
+import MotionNumber from "motion-number";
 
 interface AddToCartProps {
   productId: string;
@@ -14,7 +15,6 @@ export default function AddToCartButton({
   count,
   addFn,
 }: AddToCartProps) {
-  console.log(productId);
   return (
     <Button
       size="lg"
@@ -22,24 +22,29 @@ export default function AddToCartButton({
       variant="shadow"
       onPress={addFn}
       className={cn(
-        "px-1 text-sm font-light transition-all duration-300 ease-out",
+        "border-[0.33px] border-default-500/30 px-1 text-sm font-light transition-all duration-300 ease-out",
         { "px-6": count === 1 },
+        `${productId}`,
       )}
     >
       {count >= 2 ? (
         <div className="flex items-center space-x-2 px-3 font-ibm">
           <div className="flex items-center space-x-2">
             Add
-            <div className="mx-2 flex size-[24px] items-center justify-center rounded-full border-[3px] border-white bg-gray-800 font-ibm text-[10px] font-medium text-white shadow-md">
-              <span className="animate-enter">{count}</span>
+            <div className="mx-2 flex size-[24px] items-center justify-center rounded-full border-[2px] border-white bg-gray-800 font-ibm text-xs font-medium text-white shadow-md">
+              <MotionNumber
+                value={count}
+                format={{ notation: "compact", maximumFractionDigits: 0 }}
+              />
             </div>
             items
           </div>
-          <ShoppingCartIcon className="size-5 text-gray-800/80" />
+          <ShoppingBagIcon className="size-5 fill-sky-50 stroke-1 text-gray-800/90" />
         </div>
       ) : (
         <div className="flex items-center space-x-2">
-          <p>Add item</p> <ShoppingCartIcon className="size-5 stroke-[1.5px]" />
+          <p>Add item</p>{" "}
+          <ShoppingBagIcon className="size-5 fill-sky-50 stroke-1 text-gray-800/90" />
         </div>
       )}
     </Button>

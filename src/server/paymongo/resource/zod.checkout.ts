@@ -87,6 +87,13 @@ export const CheckoutResourceSchema = z.object({
   }),
 });
 
+export const CartUpdatedSchema = z.object({
+  updated: z.number(),
+});
+export type CartUpdated = z.infer<typeof CartUpdatedSchema>;
+export const JsonCartDataSchema = CheckoutParamsSchema.merge(CartUpdatedSchema);
+export type JsonCartData = z.infer<typeof JsonCartDataSchema>;
+
 export type CheckoutResource = z.infer<typeof CheckoutResourceSchema>;
 
 export const RetrieveCheckoutParamsSchema = z.object({

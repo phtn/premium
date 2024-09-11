@@ -22,11 +22,11 @@ export const env = createEnv({
 
     F_ADMIN: z.string(),
 
-    UPSTASH_VECTOR_REST_URL: z.string().url(),
+    UPSTASH_VECTOR_REST_URL: z.string(),
     UPSTASH_VECTOR_REST_TOKEN: z.string(),
     UPSTASH_REDIS_REST_URL: z.string(),
     UPSTASH_REDIS_REST_TOKEN: z.string(),
-    UPSTASH_EMAIL: z.string().email(),
+    UPSTASH_EMAIL: z.string(),
     UPSTASH_API_K: z.string(),
     QSTASH_TOKEN: z.string(),
   },

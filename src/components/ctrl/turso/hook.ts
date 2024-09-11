@@ -111,12 +111,14 @@ export function useCatDB() {
 const randomCat = () =>
   ({
     categoryId: Date.now().toString(36),
-    name: "skin care",
-    slug: "skin-care",
-    description: faker.commerce.product(),
+    name: "Gifts",
+    slug: "gifts",
+    description:
+      "Gifts and presents, perfect for weddings, anniversaries, and holidays.",
     createdBy: "m0twy921",
-    photoURL: faker.image.avatarGitHub(),
-    remarks: faker.commerce.productAdjective(),
+    photoURL:
+      "https://thebodyshop.com.ph/cdn/shop/products/Discover_Your_Glow_Vitamin_C_Skincare_Routine_01_1296x.jpg?v=1698319267",
+    remarks: "For men & women.",
   }) satisfies InsertCategory;
 
 export function useProductDB() {
@@ -126,9 +128,9 @@ export function useProductDB() {
   const [error, setError] = useState<Error>();
 
   const createProduct = () => {
-    const newProduct = randomProduct();
-    setProduct(newProduct);
-    setValidProduct(InsertProductSchema.safeParse(newProduct).success);
+    // const newProduct = randomProduct();
+    setProduct(dummyProduct);
+    setValidProduct(InsertProductSchema.safeParse(dummyProduct).success);
   };
 
   const productInsert = useCallback(() => {
@@ -149,7 +151,7 @@ export function useProductDB() {
   };
 }
 
-const randomProduct = () =>
+export const randomProduct = () =>
   ({
     productId: Date.now().toString(36),
     categoryId: "m0txakzd",
@@ -165,6 +167,32 @@ const randomProduct = () =>
     short: faker.commerce.productAdjective(),
     createdBy: "m0twy921",
   }) satisfies InsertProduct;
+
+const dummyProduct = {
+  productId: Date.now().toString(36),
+  name: "Secura Extra Large",
+  description:
+    "Transparent, silky smooth condoms Extra Large from Secura Condoms with more size and comfort for the larger penis. With silicone-based coating and reservoir. Odourless and tasteless. Length 180 mm, nominal width 60 mm. 48 pieces",
+  price: 2250,
+  stock: 200,
+  material: "Synthetic Skin",
+  imageUrl: "img003",
+  slug: "make-up/lipstick",
+  dimensions: "4g",
+  short: "For hung.",
+  categoryId: "m0txakzd", // Assuming categoryId for skincare
+  active: true,
+  liveMode: false,
+  remarks: "Best seller",
+  createdBy: "m0twy921",
+} satisfies InsertProduct;
+
+export const productImages = [
+  "https://piliani.com.ph/cdn/shop/files/PA-IHFC_2048x2048.jpg?v=1706746911",
+  "https://piliani.com.ph/cdn/shop/files/PA-IHFC50_2048x2048.jpg?v=1706746911",
+  "https://adultsplay.shop/cdn/shop/products/416568x1.jpg?v=1699150839&width=1646",
+  "https://giftswithlove.my/wp-content/uploads/2019/11/laneige.jpg",
+];
 
 // const sendWebhook = async (endpoint: string, message: object) => {
 //   await fetch(endpoint, {

@@ -16,9 +16,15 @@ import type {
   SelectProduct,
   SelectUser,
 } from "@/server/db/schema";
-import { DB } from "@/app/ctx";
+import { DB, useCart } from "@/app/ctx";
+import { type LineItem } from "@/server/paymongo/resource/zod.checkout";
 
-type ItemType = SelectUser | SelectCategory | SelectProduct | SelectAdmin;
+type ItemType =
+  | SelectUser
+  | SelectCategory
+  | SelectProduct
+  | SelectAdmin
+  | LineItem;
 type CardProps<T extends ItemType> = { item: T; children: ReactNode };
 type CardComponent = ComponentType<CardProps<ItemType>>;
 
@@ -45,6 +51,8 @@ export const ListContent = (props: { id: string }) => {
     deleteAdminById,
   } = useDb();
 
+  const { itemList, getCartItems, deleteItem } = useCart();
+
   const page = () => {
     switch (props.id) {
       case "admin":
@@ -70,6 +78,12 @@ export const ListContent = (props: { id: string }) => {
           list: products,
           fn: getProducts,
           IterCard: ProductCard as CardComponent,
+        };
+      case "cart":
+        return {
+          list: itemList,
+          fn: getCartItems,
+          IterCard: CartItemCard as CardComponent,
         };
       default:
         return {
@@ -98,6 +112,8 @@ export const ListContent = (props: { id: string }) => {
         await deleteCategoryById({ categoryId: item.categoryId }).then(() =>
           getCategories(),
         );
+      } else if ("amount" in item) {
+        await deleteItem(item.name).then(() => getCartItems());
       }
     },
     [
@@ -109,11 +125,13 @@ export const ListContent = (props: { id: string }) => {
       getUsers,
       getProducts,
       getAdmins,
+      deleteItem,
+      getCartItems,
     ],
   );
 
   return (
-    <DB.Provider value={{ users, categories, products, admins }}>
+    <DB.Provider value={{ users, categories, products, admins, loading }}>
       <div className="h-screen w-full space-y-2 overflow-auto px-4 pb-[150px] pt-2">
         <div className="flex items-center">
           <div className="w-[340px] text-xs font-medium capitalize">
@@ -134,8 +152,8 @@ export const ListContent = (props: { id: string }) => {
           </div>
         </div>
         <div className="space-y-2">
-          {list?.map((item) => (
-            <IterCard item={item} key={item.createdAt}>
+          {list?.map((item, i) => (
+            <IterCard item={item} key={i}>
               <Button
                 isIconOnly
                 color="default"
@@ -154,26 +172,7 @@ export const ListContent = (props: { id: string }) => {
   );
 };
 
-export const UserCard = ({ item, children }: CardProps<SelectUser>) => {
-  return (
-    <Card className="max-w-[400px] p-3">
-      <Header
-        avatar={item.photoURL!}
-        title={item.displayName}
-        subtext={item.email}
-      >
-        {children}
-      </Header>
-      <CardBody className="px-3 py-0 text-small text-default-400"></CardBody>
-      <CardFooter className="gap-3">
-        <Extra label="ID" value={item.userId} />
-        <Extra label="Joined" value={item.createdAt} />
-      </CardFooter>
-    </Card>
-  );
-};
-
-export const AdminCard = ({ item, children }: CardProps<SelectAdmin>) => {
+const AdminCard = ({ item, children }: CardProps<SelectAdmin>) => {
   return (
     <Card className="max-w-[400px] p-3">
       <Header
@@ -193,7 +192,26 @@ export const AdminCard = ({ item, children }: CardProps<SelectAdmin>) => {
   );
 };
 
-export const CatCard = ({ item, children }: CardProps<SelectCategory>) => {
+const UserCard = ({ item, children }: CardProps<SelectUser>) => {
+  return (
+    <Card className="max-w-[400px] p-3">
+      <Header
+        avatar={item.photoURL!}
+        title={item.displayName}
+        subtext={item.email}
+      >
+        {children}
+      </Header>
+      <CardBody className="px-3 py-0 text-small text-default-400"></CardBody>
+      <CardFooter className="gap-3">
+        <Extra label="ID" value={item.userId} />
+        <Extra label="Joined" value={item.createdAt} />
+      </CardFooter>
+    </Card>
+  );
+};
+
+const CatCard = ({ item, children }: CardProps<SelectCategory>) => {
   return (
     <Card className="max-w-[400px] p-3">
       <Header
@@ -215,7 +233,7 @@ export const CatCard = ({ item, children }: CardProps<SelectCategory>) => {
   );
 };
 
-export const ProductCard = ({ item, children }: CardProps<SelectProduct>) => {
+const ProductCard = ({ item, children }: CardProps<SelectProduct>) => {
   return (
     <Card className="max-w-[400px] p-3">
       <Header
@@ -238,10 +256,31 @@ export const ProductCard = ({ item, children }: CardProps<SelectProduct>) => {
   );
 };
 
+const CartItemCard = ({ item, children }: CardProps<LineItem>) => {
+  return (
+    <Card className="max-w-[400px] p-3">
+      <Header
+        avatar={"/svg/re-up_admin_logo.svg"}
+        title={item.name}
+        subtext={item.quantity}
+      >
+        {children}
+      </Header>
+      <CardBody className="px-3 py-0 text-small text-default-400">
+        {item.description}
+      </CardBody>
+      <CardFooter className="gap-3">
+        <Extra label="total amount" value={item.amount} />
+        <Extra label="currency" value={item.currency} />
+      </CardFooter>
+    </Card>
+  );
+};
+
 interface HeaderProps {
   avatar: string;
   title: string;
-  subtext: string;
+  subtext: string | number;
   children?: ReactNode;
 }
 const Header = ({ avatar, title, subtext, children }: HeaderProps) => (

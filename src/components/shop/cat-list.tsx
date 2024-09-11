@@ -1,12 +1,10 @@
 import Link from "next/link";
-import ProductImage from "./product-image";
 import type { SelectProduct, SelectCategory } from "@/server/db/schema";
 
 async function CategoryListing(props: {
   category: SelectCategory;
   products: SelectProduct[] | null;
 }) {
-  // const products = await getProductsByCategory(category.name);
   const { category, products } = props;
 
   return (
@@ -20,10 +18,6 @@ async function CategoryListing(props: {
             className="group"
           >
             <div className="rounded-lg border p-4 transition-shadow hover:shadow-lg">
-              <ProductImage
-                src={category.photoURL ?? ""}
-                className="mb-4 h-48 w-full object-cover"
-              />
               <h2 className="mb-2 text-lg font-semibold group-hover:text-blue-600">
                 {product.name}
               </h2>

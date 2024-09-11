@@ -2,6 +2,7 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/react";
 import { useCallback } from "react";
 import { cn } from "@/utils/cn";
+import Image from "next/image";
 
 type ActionType =
   | "primary"
@@ -84,10 +85,13 @@ export const HeroLight = (props: HeroProps) => {
             href={action.href}
             size={`lg`}
             variant={"shadow"}
-            color={action.type}
             className={cn(
-              "group animate-enter text-sm font-medium tracking-tighter",
-              { "delay-100": i === 1 },
+              "group animate-enter text-sm font-medium tracking-tighter delay-100",
+              { "delay-200": i === 1 },
+              {
+                "bg-gradient-to-r from-rose-200 via-orange-300 to-red-300":
+                  action.type === "warning",
+              },
             )}
           >
             {action.label}
@@ -98,21 +102,24 @@ export const HeroLight = (props: HeroProps) => {
   }, [actions]);
 
   return (
-    <div className="relative mb-6 flex w-full max-w-5xl flex-col items-center justify-center leading-none portrait:w-screen">
+    <div className="relative mb-6 flex w-full max-w-7xl flex-col items-center justify-center leading-none portrait:w-screen">
       <div className="_border bg-[url('/svg/heart_v1.svg')]_ pointer-events-none absolute h-full w-full border-gray-500 bg-cover bg-right opacity-20"></div>
-      <div className="grid h-fit w-full from-default-100/40 via-default-100/20 to-transparent lg:mx-12 lg:grid-cols-2 portrait:bg-gradient-to-b">
+      <div className="grid h-fit w-full from-zinc-100/40 via-zinc-100/20 to-transparent lg:mx-12 lg:grid-cols-2 portrait:bg-gradient-to-b">
         <div className="relative z-10 flex items-end px-6 pb-8 pt-12 md:p-12 md:pt-12">
-          <div className={cn("w-full space-y-8 text-sky-950", foreground)}>
+          <div className={cn("w-full space-y-12 text-sky-950", foreground)}>
             <div className="flex w-full flex-col px-2 portrait:items-center portrait:justify-center portrait:px-0">
-              <h2 className="max-w-[16ch] text-4xl font-extrabold tracking-tighter portrait:text-3xl">
-                {heading?.[0] ?? heading}
+              <h2 className="max-w-[16ch] font-sarabun text-4xl font-bold tracking-tighter portrait:text-3xl">
+                {heading?.[0] ?? heading}{" "}
               </h2>
-              <h2 className="max-w-[16ch] text-2xl font-semibold tracking-tighter opacity-60 portrait:text-xl">
+              <h2 className="max-w-[16ch] font-sarabun text-lg tracking-wider opacity-80 portrait:text-xl">
+                <span className="pl-1 pr-2 font-extrabold text-primary">𝑥</span>
                 {heading?.[1]}
               </h2>
             </div>
             <div className="flex w-full px-2 portrait:justify-center portrait:px-0">
-              <h4 className="text-sm opacity-60">{subheading}</h4>
+              <h4 className="font-ibm text-sm tracking-wider opacity-80">
+                {subheading}
+              </h4>
             </div>
             <div className="flex items-center space-x-3 portrait:justify-center">
               <ActionButtons />
@@ -133,8 +140,103 @@ export const HeroLight = (props: HeroProps) => {
 //   </div>
 // );
 
+export const HeroMax = (props: HeroProps) => {
+  const { subheading, actions } = props;
+
+  const ActionButtons = useCallback(() => {
+    return (
+      <>
+        {actions?.map((action, i) => (
+          <Button
+            key={action.label}
+            as={Link}
+            href={action.href}
+            size={`lg`}
+            variant={"shadow"}
+            color={action.type}
+            className={cn(
+              "group animate-enter text-sm font-medium tracking-tighter",
+              { "delay-100": i === 1 },
+              {
+                "bg-gradient-to-r from-rose-200 via-orange-200 to-[#F2CBAE]":
+                  action.type === "secondary",
+              },
+              {
+                "bg-gray-800 text-white": action.type === "default",
+              },
+            )}
+          >
+            {action.label}
+          </Button>
+        ))}
+      </>
+    );
+  }, [actions]);
+
+  // const Heading = useCallback(
+  //   () => (
+  //     <div className="flex w-full flex-col px-2 portrait:items-center portrait:justify-center portrait:px-0">
+  //       <h2 className="max-w-[16ch] font-sarabun text-4xl font-bold tracking-tighter portrait:text-3xl">
+  //         {heading?.[0] ?? heading}{" "}
+  //       </h2>
+  //       <h2 className="max-w-[16ch] font-sarabun text-lg tracking-wider opacity-80 portrait:text-xl">
+  //         <span className="pl-1 pr-2 font-extrabold text-primary">𝑥</span>
+  //         {heading?.[1]}
+  //       </h2>
+  //     </div>
+  //   ),
+  //   [heading],
+  // );
+
+  const Subheading = useCallback(() => {
+    return (
+      <div className="absolute flex w-fit bg-sky-100/20 p-6 backdrop-blur-md portrait:justify-center portrait:px-0">
+        <h4 className="font-ibm font-bold tracking-wider text-gray-800">
+          {subheading}
+        </h4>
+      </div>
+    );
+  }, [subheading]);
+
+  const Actions = useCallback(
+    () => (
+      <div className="flex h-24 items-center space-x-3 portrait:justify-center">
+        <ActionButtons />
+      </div>
+    ),
+    [ActionButtons],
+  );
+
+  return (
+    <div className="relative mb-6 flex w-full max-w-7xl flex-col items-center justify-center leading-none portrait:w-screen">
+      <div className="_border bg-[url('/svg/heart_v1.svg')]_ pointer-events-none absolute h-full w-full border-gray-500 bg-cover bg-right opacity-20"></div>
+      <div className="grid h-fit w-full grid-cols-10 portrait:bg-gradient-to-b">
+        <div
+          className={
+            "grid- relative col-span-4 flex w-full flex-col items-center justify-center border-r-4 border-gray-800/80 bg-gradient-to-l from-zinc-100 via-stone-100 to-transparent text-sky-950"
+          }
+        >
+          <Image
+            alt=""
+            src={"/images/mac.avif"}
+            width={0}
+            height={0}
+            unoptimized
+            priority
+            className="h-auto w-72"
+          />
+          <Subheading />
+          <Actions />
+        </div>
+        <div className="relative inset-0 col-span-6 flex items-center justify-center rounded-3xl rounded-t-[256px] from-sky-900/20 to-transparent text-gray-800 lg:flex">
+          <StoreImage />
+          <div className="absolute ml-6 mt-6 h-64 w-80 animate-enter bg-[url('/svg/oms_v3.svg')] bg-contain bg-no-repeat delay-500"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const StoreImage = () => (
-  <div className="relative inset-0 hidden items-end rounded-3xl rounded-t-[256px] bg-gradient-to-br from-sky-900/20 to-transparent text-gray-800 shadow-[inset_0_-1px_0_rgba(22,27,59,0.04)] lg:flex">
-    <div className="-mb-4 h-80 w-full bg-[url('/store_v2.webp')] bg-cover bg-bottom" />
-  </div>
+  <div className="aspect-video h-80 w-full animate-back bg-[url('/images/cover_v2.png')] bg-cover bg-left bg-no-repeat bg-blend-luminosity grayscale delay-500 duration-700" />
 );

@@ -62,6 +62,11 @@ export const Ok =
     onSuccess(`${args[0]} ${args[1] ?? ""}`);
   };
 
+export const onSettle =
+  (setLoading: Dispatch<SetStateAction<boolean>>) => () => {
+    setLoading(false);
+  };
+
 export const opts = (...args: ReactElement[]) => {
   return new Map([
     [true, args[0]],

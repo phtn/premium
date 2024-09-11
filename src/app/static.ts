@@ -1,12 +1,12 @@
 import type { Action, HeroProps } from "@/components/app/hero";
 import { type StickyScrollContent } from "@/components/ui/sticky-reveal";
 import { type TabItem } from "@/components/ui/tabs";
-import type { Extras, TopbarLink } from "@/components/ui/topbar";
+import type { Extras, TopbarLink, Brand } from "@/components/ui/topbar";
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 
-export const brand = {
+export const brand: Brand = {
   // label: "Accessability Aid",
-  label: "Premium",
+  label: "",
 };
 export const links: TopbarLink[] = [
   // {
@@ -20,25 +20,26 @@ export const extras: Extras[] = [
     href: "/signin",
   },
   {
-    href: "/account/cart",
+    href: "/cart",
     type: "icon",
     icon: ShoppingBagIcon,
   },
 ];
 
-export const topbarProps = { brand, links, extras };
+export const topbarProps = { links, extras };
 export const actions: Action[] = [
   // { type: "primary", label: "Get full access", href: "/shop" },
   // { type: "default", label: "Learn more", href: "/shop/electronics" },
-  { type: "primary", label: "Shop", href: "/shop" },
-  { type: "default", label: "Browse categories", href: "/shop/electronics" },
+  { type: "secondary", label: "Shop by Category", href: "/shop" },
+  { type: "default", label: "All Products", href: "/shop/electronics" },
 ];
 
 export const heroProps: HeroProps = {
   foreground: "text-white_",
   // heading: ["Get Full Access", "to Australian Education."],
-  heading: ["Premium", "by re-up.ph"],
-  subheading: "Ship a fully equipped ecommerce platform.",
+  heading: ["Provector", "re-up.ph"],
+  // subheading: "Launch a full featured ecommerce platform. ",
+  subheading: "Turn matte to radiant & blush to glow. ",
   actions,
 };
 

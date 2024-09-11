@@ -16,6 +16,5 @@ export const admins = sqliteTable("admin", {
     .notNull(),
   updatedAt: integer("updatedAt", { mode: "timestamp" })
     .default(sql`CURRENT_TIMESTAMP`)
-    .notNull()
-    .$onUpdate(() => new Date()),
+    .notNull(),
 });

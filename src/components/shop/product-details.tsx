@@ -91,9 +91,9 @@ export function ProductDetails(props: {
       <div className="h-full flex-shrink-0 rounded-lg border bg-white pb-6">
         {detailData.map((detail) => (
           <Accordion
-            key={detail.id}
-            type="single"
             collapsible
+            type="single"
+            key={detail.id}
             className="w-full px-[1px] pt-[3px]"
           >
             <AccordionItem value="item_1">

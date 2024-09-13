@@ -63,6 +63,7 @@ export default {
         mono: ["var(--font-geist-mono)"],
         sarabun: ["var(--font-sarabun)"],
         ibm: ["var(--font-ibm)"],
+        arc: ["var(--font-arc)"],
       },
       colors: {
         paper: "#F8F8F8",

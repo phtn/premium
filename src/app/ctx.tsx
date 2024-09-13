@@ -18,6 +18,7 @@ import {
 } from "react";
 import { useFetchDB } from "./hooks";
 import type {
+  CheckoutParams,
   JsonCartData,
   LineItem,
 } from "@/server/paymongo/resource/zod.checkout";
@@ -25,6 +26,7 @@ import { useAuthState } from "@/utils/hooks/authState";
 import { auth } from "@/lib/firebase/config";
 import { errHandler, Ok } from "@/utils/helpers";
 import { jsonGet, jsonSetCart } from "@/lib/redis/caller";
+import { attribDefaults } from "@/components/shop/hooks/useProductDetail";
 
 interface DBValues {
   users: SelectUser[] | undefined;
@@ -60,7 +62,10 @@ interface CartCtxValues {
   getCartItems: () => Promise<void>;
   deleteItem: (name: string) => Promise<void>;
   amount: number | undefined;
+  refNumber: string | undefined;
   updateCart: (list: ItemProps[]) => Promise<void>;
+  updated: number | undefined;
+  checkoutPayload: CheckoutParams | undefined;
 }
 export const CartCtx = createContext<CartCtxValues | null>(null);
 export const CartData = ({ children }: PropsWithChildren) => {
@@ -68,12 +73,21 @@ export const CartData = ({ children }: PropsWithChildren) => {
   const [itemCount, setItemCount] = useState(0);
   const [cartData, setCartData] = useState<JsonCartData | null>();
   const [loading, setLoading] = useState(false);
+  const [refNumber, setRefNumber] = useState<string | undefined>();
   const [amount, setAmount] = useState<number>(0);
   const [itemList, setItemList] = useState<LineItem[] | undefined>();
+  const [updated, setUpdated] = useState<number>();
+  const [checkoutPayload, setCheckoutPayload] = useState<
+    CheckoutParams | undefined
+  >();
 
   const getCartItems = useCallback(async () => {
     const data = (await jsonGet(`cart_${user?.uid}`)) as JsonCartData[];
     const { lineItems, cartD } = getCartData(data);
+
+    setRefNumber(cartD?.data.attributes.reference_number);
+
+    setUpdated(cartD?.updated);
 
     setItemList(lineItems);
 
@@ -83,7 +97,19 @@ export const CartData = ({ children }: PropsWithChildren) => {
     const count = getCount(lineItems);
 
     count && setItemCount(count);
-  }, [setItemCount, user?.uid]);
+
+    setCheckoutPayload({
+      data: {
+        attributes: {
+          ...attribDefaults,
+          line_items: paymongoReady(lineItems)!,
+          reference_number: refNumber,
+          statement_descriptor: "descriptor",
+          description: "description",
+        },
+      },
+    });
+  }, [setItemCount, user?.uid, refNumber]);
 
   const deleteItem = useCallback(
     async (name: string) => {
@@ -149,6 +175,9 @@ export const CartData = ({ children }: PropsWithChildren) => {
         setAmount,
         setItemCount,
         updateCart,
+        updated,
+        refNumber,
+        checkoutPayload,
       }}
     >
       {children}
@@ -167,16 +196,26 @@ const getCount = (items: LineItem[] | undefined) =>
     return acc + cur.quantity;
   }, 0);
 
-const getTotalAmount = (lineItems: LineItem[] | undefined): number => {
-  return lineItems?.reduce((total, item) => total + item.amount, 0) ?? 0;
-};
+const getTotalAmount = (lineItems: LineItem[] | undefined): number =>
+  lineItems?.reduce((total, item) => total + item.amount, 0) ?? 0;
 
 const deleteCartItem = (
   lineItems: LineItem[] | undefined,
   name: string,
-): LineItem[] => {
-  return lineItems?.filter((item) => item.name !== name) ?? [];
-};
+): LineItem[] => lineItems?.filter((item) => item.name !== name) ?? [];
+
+const paymongoReady = (lineItems: LineItem[] | undefined) =>
+  lineItems?.map(
+    (item) =>
+      ({
+        ...item,
+        description: item.description.substring(
+          0,
+          item.description.indexOf("--"),
+        ),
+        amount: item.amount * 100,
+      }) as LineItem,
+  );
 
 export interface ItemProps {
   image: string | null;

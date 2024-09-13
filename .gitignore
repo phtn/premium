@@ -47,3 +47,8 @@ yarn-error.log*
 
 # firebase
 firebase.conf.ts
+
+# turso
+turso_dev
+turso_dev-shm
+turso_dev-wal

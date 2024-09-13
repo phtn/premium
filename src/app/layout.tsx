@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { Inter, Sarabun, IBM_Plex_Sans } from "next/font/google";
+import { Inter, Sarabun, IBM_Plex_Sans, Archivo } from "next/font/google";
 import { type Metadata } from "next";
 import { TRPCProvider } from "@/trpc/provider";
 import { Providers } from "./providers";
@@ -25,6 +25,12 @@ const ibm = IBM_Plex_Sans({
   variable: "--font-ibm",
 });
 
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
+  variable: "--font-arc",
+});
+
 export const metadata: Metadata = {
   title: "Premium x re-up.ph ",
   description: "Premium by xpriori",
@@ -38,7 +44,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={cn(
-        `font-sans ${inter.variable} ${ibm.variable} ${GeistSans.variable} ${GeistMono.variable} ${sarabun.variable} antialiased`,
+        `font-sans ${inter.variable} ${ibm.variable} ${GeistSans.variable} ${GeistMono.variable} ${archivo.variable} ${sarabun.variable} antialiased`,
       )}
     >
       <body>

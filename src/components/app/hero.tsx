@@ -2,7 +2,6 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/react";
 import { useCallback } from "react";
 import { cn } from "@/utils/cn";
-import Image from "next/image";
 
 type ActionType =
   | "primary"
@@ -141,7 +140,7 @@ export const HeroLight = (props: HeroProps) => {
 // );
 
 export const HeroMax = (props: HeroProps) => {
-  const { subheading, actions } = props;
+  const { actions } = props;
 
   const ActionButtons = useCallback(() => {
     return (
@@ -188,15 +187,15 @@ export const HeroMax = (props: HeroProps) => {
   //   [heading],
   // );
 
-  const Subheading = useCallback(() => {
-    return (
-      <div className="absolute flex w-fit bg-sky-100/20 p-6 backdrop-blur-md portrait:justify-center portrait:px-0">
-        <h4 className="font-ibm font-bold tracking-wider text-gray-800">
-          {subheading}
-        </h4>
-      </div>
-    );
-  }, [subheading]);
+  // const Subheading = useCallback(() => {
+  //   return (
+  //     <div className="absolute flex w-fit bg-sky-100/20 p-6 backdrop-blur-md portrait:justify-center portrait:px-0">
+  //       <h4 className="font-ibm font-bold tracking-wider text-gray-800">
+  //         {subheading}
+  //       </h4>
+  //     </div>
+  //   );
+  // }, [subheading]);
 
   const Actions = useCallback(
     () => (
@@ -209,14 +208,30 @@ export const HeroMax = (props: HeroProps) => {
 
   return (
     <div className="relative mb-6 flex w-full max-w-7xl flex-col items-center justify-center leading-none portrait:w-screen">
-      <div className="_border bg-[url('/svg/heart_v1.svg')]_ pointer-events-none absolute h-full w-full border-gray-500 bg-cover bg-right opacity-20"></div>
+      <div className=" pointer-events-none absolute h-full w-full bg-cover bg-right opacity-20"></div>
       <div className="grid h-fit w-full grid-cols-10 portrait:bg-gradient-to-b">
+        <div className="relative col-span-6 flex items-center justify-center rounded-3xl rounded-t-[256px] from-sky-900/20 to-transparent text-gray-800 lg:flex portrait:col-span-10">
+          <StoreImage />
+          <div className="absolute ml-6 mt-14 h-40 w-64 animate-enter bg-[url('/svg/oms_v3.svg')] bg-contain bg-no-repeat delay-500 portrait:h-28 portrait:w-24"></div>
+        </div>
         <div
           className={
-            "grid- relative col-span-4 flex w-full flex-col items-center justify-center border-r-4 border-gray-800/80 bg-gradient-to-l from-zinc-100 via-stone-100 to-transparent text-sky-950"
+            " _portrait:hidden _bg-gradient-to-l relative col-span-4 flex w-full flex-col items-center justify-center from-zinc-100 via-stone-100 to-transparent text-sky-950 portrait:col-span-10"
           }
         >
-          <Image
+          <Actions />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const StoreImage = () => (
+  <div className="h-80 w-full animate-back bg-[url('/images/cover_v2.png')] bg-cover bg-left bg-no-repeat bg-blend-luminosity grayscale delay-500 duration-700 portrait:w-screen" />
+);
+
+/*
+<Image
             alt=""
             src={"/images/mac.avif"}
             width={0}
@@ -226,17 +241,4 @@ export const HeroMax = (props: HeroProps) => {
             className="h-auto w-72"
           />
           <Subheading />
-          <Actions />
-        </div>
-        <div className="relative inset-0 col-span-6 flex items-center justify-center rounded-3xl rounded-t-[256px] from-sky-900/20 to-transparent text-gray-800 lg:flex">
-          <StoreImage />
-          <div className="absolute ml-6 mt-6 h-64 w-80 animate-enter bg-[url('/svg/oms_v3.svg')] bg-contain bg-no-repeat delay-500"></div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const StoreImage = () => (
-  <div className="aspect-video h-80 w-full animate-back bg-[url('/images/cover_v2.png')] bg-cover bg-left bg-no-repeat bg-blend-luminosity grayscale delay-500 duration-700" />
-);
+*/

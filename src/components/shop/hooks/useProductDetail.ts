@@ -40,7 +40,7 @@ export const useProductDetail = (
     if (!product) return;
     const description =
       product.description +
-      `--${product.brand}/${product.price}/${product.stock}/${product.category}/${product.subcategory}/${product.size}/${product.count}/${product.countUnit}/${product.weight}/${product.weightUnit}**`;
+      `--${product.brand}|>${product.price}|>${product.imageUrl}|>${product.stock}|>${product.category}|>${product.subcategory}|>${product.size}|>${product.count}|>${product.countUnit}|>${product.weight}|>${product.weightUnit}**`;
     return description;
   }, [product]);
 
@@ -132,7 +132,7 @@ export const useProductDetail = (
   };
 };
 
-const attribDefaults: Omit<
+export const attribDefaults: Omit<
   Attributes,
   "line_items" | "description" | "reference_number" | "statement_descriptor"
 > = {

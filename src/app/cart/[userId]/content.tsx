@@ -1,5 +1,4 @@
 "use client";
-import { Copy, CreditCard, Truck } from "lucide-react";
 
 import { Badge, Button, Card, CardFooter, CardHeader } from "@nextui-org/react";
 import { Topbar } from "@/components/ui/topbar";
@@ -20,6 +19,8 @@ import {
   PlusIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
+import { usePaymongo } from "./usePaymongo";
+import { formatAsMoney } from "@/utils/helpers";
 
 interface CartContentProps {
   userId: string | null;
@@ -28,7 +29,21 @@ interface CartContentProps {
 export const CartContent = ({ userId }: CartContentProps) => {
   const [list, setList] = useState<ItemProps[]>();
 
-  const { amount, itemCount, itemList, updateCart } = useCart();
+  const {
+    amount,
+    itemCount,
+    itemList,
+    updateCart,
+    refNumber,
+    updated,
+    checkoutPayload,
+  } = useCart();
+
+  const { loading, createCS } = usePaymongo();
+
+  const handleCheckout = async () => {
+    await createCS(checkoutPayload!);
+  };
 
   const getList = useCallback(() => {
     const ls = itemList?.map(
@@ -60,10 +75,17 @@ export const CartContent = ({ userId }: CartContentProps) => {
 
   return (
     <div className="flex w-full flex-col items-center bg-white">
-      <Topbar extras={[{ label: "Sign in", href: "/signin", type: "text" }]} />
+      <div className="w-full py-4">
+        <Topbar
+          extras={[{ label: "Sign in", href: "/signin", type: "text" }]}
+        />
+      </div>
       <Wrapper>
         <div className="col-span-6">
-          <Header itemCount={itemCount} amount={amount ?? 0} />
+          <Header
+            itemCount={itemCount}
+            amount={`₱ ${formatAsMoney(amount!) ?? 0}`}
+          />
           <ItemList
             list={list}
             deleteFn={deleteItem}
@@ -74,7 +96,13 @@ export const CartContent = ({ userId }: CartContentProps) => {
         </div>
 
         <div className="col-span-4">
-          <Breakdown />
+          <Breakdown
+            refNumber={refNumber}
+            list={list}
+            updated={updated}
+            checkoutFn={handleCheckout}
+            loading={loading}
+          />
         </div>
       </Wrapper>
     </div>
@@ -90,15 +118,17 @@ interface ItemListProps {
 }
 
 const Description = ({ children }: PropsWithChildren) => (
-  <p className="max-w-[56ch] overflow-auto text-ellipsis whitespace-nowrap font-sarabun text-sm text-amber-800">
+  <p className="max-w-[56ch] overflow-auto text-ellipsis whitespace-nowrap font-sarabun text-sm text-stone-500">
     {children}
   </p>
 );
 
 const ItemList = (props: ItemListProps) => {
   const Item = (itemProps: ItemProps) => {
-    const { name, description, price, quantity, amount } = itemProps;
-    const image = "/images/aqua_al_v1.avif";
+    const { name, description, quantity, amount } = itemProps;
+    const meco = description?.split("--");
+    const stageSep = meco?.[1]?.split("|>");
+    const image = stageSep?.[2] ?? "/images/aqua_al_v1.avif";
     return (
       <div
         className={cn(
@@ -109,11 +139,20 @@ const ItemList = (props: ItemListProps) => {
         <div className="flex items-center space-x-6">
           <ProductImage alt={image} src={image} quantity={quantity} />
           <div className="flex flex-col space-y-2.5 leading-none">
-            <div className="h-12 border">
-              <p className="text-lg">{name}</p>
-              <Description>{description}</Description>
+            <div className="h-12">
+              <p className="font-ibm text-lg font-medium tracking-tight">
+                {name}{" "}
+                <span className="px-1 text-sm tracking-wide opacity-60">
+                  by {stageSep?.[0]}
+                </span>
+              </p>
+              <Description>{meco?.[0] ?? "no description"}</Description>
             </div>
-            <div>{price}</div>
+            <div className="flex items-center space-x-2">
+              <p className="font-arc">
+                ₱ {formatAsMoney(parseInt(stageSep?.[1] ?? "0"))}
+              </p>
+            </div>
           </div>
         </div>
         <div className="pointer-events-auto flex cursor-pointer items-center space-x-6">
@@ -121,28 +160,23 @@ const ItemList = (props: ItemListProps) => {
           <MinusIcon className="invisible size-5 animate-enter stroke-1 text-gray-800 animate-in animate-out group-hover:visible" />
           <TrashIcon className="invisible size-5 animate-enter stroke-1 text-gray-800 animate-in animate-out group-hover:visible" />
           <ChevronRightIcon className="size-8 stroke-[0.33px] text-gray-800" />
-          <div className="flex size-20 flex-col items-center justify-center">
+          <div className="flex size-20 flex-col items-center justify-center font-arc">
             <Label>amount</Label>
-            <p>{amount}</p>
+            <p>₱ {formatAsMoney(amount ?? 0)}</p>
           </div>
         </div>
       </div>
     );
   };
   return (
-    <div className="h-[calc(100vh-12rem)] w-full overflow-auto py-6">
+    <div className="h-[calc(100vh-13rem)] w-full overflow-auto py-6">
       <div className="mb-4 flex h-8 items-center justify-between pl-2">
         <Label>Item list </Label>
-        <Button
-          variant="shadow"
-          color="primary"
-          size="sm"
-          onPress={props.saveFn}
-        >
+        <Button color="primary" size="sm" onPress={props.saveFn}>
           Save
         </Button>
       </div>
-      <div className="h-full w-full space-y-8">
+      <div className="h-fit w-full space-y-8">
         {props.list?.map((item, i) => <Item key={i} {...item} />)}
       </div>
     </div>
@@ -159,9 +193,9 @@ const ProductImage = ({ alt, src, quantity }: ProductImageProps) => (
     content={quantity}
     shape="rectangle"
     color="primary"
-    variant="shadow"
     size="lg"
     placement="bottom-right"
+    className="bg-gray-800 font-arc"
   >
     <Image
       alt={alt ?? "product image"}
@@ -178,9 +212,10 @@ const ProductImage = ({ alt, src, quantity }: ProductImageProps) => (
 const Wrapper = ({ children }: PropsWithChildren) => (
   <div
     className={cn(
-      "grid w-full grid-cols-1 gap-x-10 p-6 md:grid-cols-10",
+      "grid w-full grid-cols-1 gap-x-10 p-6 md:grid-cols-10 lg:px-10 xl:px-24",
       "bg-[conic-gradient(at_top_center,_var(--tw-gradient-stops))]",
-      "from-yellow-100/80 via-slate-50/80 to-teal-50/40 backdrop-blur-lg",
+      "from-stone-50/50 via-zinc-50/50 to-default-50/50",
+      // "from-yellow-100/80 via-slate-50/80 to-teal-50/40 backdrop-blur-lg",
       "_border border-primary",
     )}
   >
@@ -190,7 +225,7 @@ const Wrapper = ({ children }: PropsWithChildren) => (
 
 interface HeaderProps {
   itemCount: number | null;
-  amount: number;
+  amount: string;
 }
 function Header({ itemCount, amount }: HeaderProps) {
   return (
@@ -223,7 +258,7 @@ const PageHeader = () => {
         className=""
         onMouseEnter={handlePlay}
       >
-        <source src="/videos/order.mp4" type="video/mp4" />
+        <source src="/videos/shopping-bag.mp4" type="video/mp4" />
       </video>
     </div>
   );
@@ -240,12 +275,12 @@ const Stat = ({ label, value, dark = false }: StatProps) => {
       className={cn(
         "flex min-h-24 min-w-24 cursor-pointer flex-col items-center space-y-2 rounded-lg border-[0.33px] border-default-400/60 bg-white p-4 text-gray-800 shadow-sm shadow-default/80 transition-all duration-300 ease-out hover:shadow-md",
         {
-          "border-0 bg-gray-800 p-4 text-sky-100/80": dark,
+          "border-0 bg-gray-800 p-4 text-sky-50": dark,
         },
       )}
     >
       <Label>{label}</Label>
-      <div className="font-ibm text-3xl">{value}</div>
+      <div className="font-arc text-3xl">{value}</div>
     </div>
   );
 };
@@ -254,82 +289,91 @@ const Label = ({ children }: PropsWithChildren) => (
   <p className="text-xs capitalize opacity-80">{children}</p>
 );
 
-function Breakdown() {
+interface BreakdownProps {
+  refNumber: string | undefined;
+  list: ItemProps[] | undefined;
+  updated: number | undefined;
+  checkoutFn: VoidFunction;
+  loading: boolean;
+}
+function Breakdown({
+  refNumber,
+  list,
+  updated,
+  checkoutFn,
+  loading,
+}: BreakdownProps) {
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="bg-muted/50 flex flex-row items-start">
+    <Card className="-mt-5 overflow-hidden rounded-lg border-[0.33px] border-default-400 bg-default-100 shadow-md shadow-default">
+      <CardHeader className="flex flex-row items-start">
         <div className="grid gap-0.5">
-          <div className="group flex items-center gap-2 text-lg">
-            Order Oe31b70H
-            <Button
-              isIconOnly
-              size="sm"
-              variant="solid"
-              className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-            >
-              <Copy className="h-3 w-3" />
-              <span className="sr-only">Copy Order ID</span>
-            </Button>
-          </div>
-          <p>Date: November 23, 2023</p>
-        </div>
-        <div className="ml-auto flex items-center gap-1">
-          <Button size="sm" variant="flat" className="h-8 gap-1">
-            <Truck className="h-3.5 w-3.5" />
-            <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
-              Track Order
+          <div className="group flex items-center gap-2 whitespace-nowrap font-arc">
+            Ref #
+            <span className="font-arc text-xs font-light tracking-widest">
+              {refNumber}
             </span>
-          </Button>
+          </div>
+          <Label>{Date.now()}</Label>
         </div>
       </CardHeader>
-      <BreakdownContent />
-      <CardFooter className="bg-muted/50 flex flex-row items-center border-t px-6 py-3">
-        <div className="text-muted-foreground text-xs">
-          Updated <time dateTime="2023-11-23">November 23, 2023</time>
+      <BreakdownContent list={list} onCheckout={checkoutFn} loading={loading} />
+      <CardFooter className="flex flex-row items-center rounded-b-lg border-t bg-default/60 px-6 py-3">
+        <div className="text-xs text-default-500">
+          Updated <time dateTime="2023-11-23">{updated}</time>
         </div>
       </CardFooter>
     </Card>
   );
 }
 
-const BreakdownContent = () => {
+interface BreakdownContentProps {
+  list: ItemProps[] | undefined;
+  onCheckout: VoidFunction;
+  loading: boolean;
+}
+const BreakdownContent = ({
+  list,
+  onCheckout,
+  loading,
+}: BreakdownContentProps) => {
+  const subtotal = list?.reduce((acc, cur) => (acc += cur.amount), 0);
+  const shippingCost = 100;
+  const taxPct = 12;
+  const tax = (subtotal! * taxPct) / 100;
+  const total = subtotal! + shippingCost + tax;
   return (
     <div className="p-6 text-sm">
       <div className="grid gap-3">
         <div className="font-semibold">Order Details</div>
         <ul className="grid gap-3">
-          <li className="flex items-center justify-between">
-            <span className="text-muted-foreground">
-              Glimmer Lamps x <span>2</span>
-            </span>
-            <span>$250.00</span>
-          </li>
-          <li className="flex items-center justify-between">
-            <span className="text-muted-foreground">
-              Aqua Filters x <span>1</span>
-            </span>
-            <span>$49.00</span>
-          </li>
+          {list?.map((item) => (
+            <li key={item.name} className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {item.name} x <span>{item.quantity}</span>
+              </span>
+              <span className="font-arc">₱{formatAsMoney(item.amount)}</span>
+            </li>
+          ))}
         </ul>
 
-        <div className="my-4 h-[2px] bg-gray-100" />
+        <div className="my-3 h-[2px] bg-gray-100" />
 
         <ul className="grid gap-3">
           <li className="flex items-center justify-between">
             <span className="text-muted-foreground">Subtotal</span>
-            <span>$299.00</span>
+            <span className="font-arc">₱{subtotal?.toFixed(2)}</span>
           </li>
           <li className="flex items-center justify-between">
             <span className="text-muted-foreground">Shipping</span>
-            <span>$5.00</span>
+            <span className="font-arc">₱{shippingCost.toFixed(2)}</span>
           </li>
           <li className="flex items-center justify-between">
             <span className="text-muted-foreground">Tax</span>
-            <span>$25.00</span>
+            <span className="font-arc">₱{tax.toFixed(2)}</span>
           </li>
           <li className="flex items-center justify-between font-semibold">
             <span className="text-muted-foreground">Total</span>
-            <span>$329.00</span>
+            <span className="font-arc">₱{formatAsMoney(total)}</span>
           </li>
         </ul>
       </div>
@@ -354,41 +398,45 @@ const BreakdownContent = () => {
       <div className="my-4 h-[2px] bg-gray-100" />
 
       <div className="grid gap-3">
-        <div className="font-semibold">Customer Information</div>
         <dl className="grid gap-3">
-          <div className="flex items-center justify-between">
-            <dt className="text-muted-foreground">Customer</dt>
-            <dd>Liam Johnson</dd>
-          </div>
-          <div className="flex items-center justify-between">
-            <dt className="text-muted-foreground">Email</dt>
-            <dd>
-              <a href="mailto:">liam@acme.com</a>
-            </dd>
-          </div>
-          <div className="flex items-center justify-between">
-            <dt className="text-muted-foreground">Phone</dt>
-            <dd>
-              <a href="tel:">+1 234 567 890</a>
-            </dd>
-          </div>
-        </dl>
-      </div>
-
-      <div className="my-4 h-[2px] bg-gray-100" />
-
-      <div className="grid gap-3">
-        <div className="font-semibold">Payment Information</div>
-        <dl className="grid gap-3">
-          <div className="flex items-center justify-between">
-            <dt className="text-muted-foreground flex items-center gap-1">
-              <CreditCard className="h-4 w-4" />
-              Visa
-            </dt>
-            <dd>**** **** **** 4532</dd>
+          <div className="flex items-center">
+            <Button
+              size="lg"
+              color="primary"
+              variant="shadow"
+              isLoading={loading}
+              onPress={onCheckout}
+              className="w-full"
+            >
+              Checkout
+            </Button>
           </div>
         </dl>
       </div>
     </div>
   );
 };
+
+export const CustomerInfo = () => (
+  <div className="grid gap-1">
+    <div className="font-semibold">Customer Information</div>
+    <dl className="grid gap-1">
+      <div className="flex items-center justify-between">
+        <dt className="text-muted-foreground">Customer</dt>
+        <dd>Liam Johnson</dd>
+      </div>
+      <div className="flex items-center justify-between">
+        <dt className="text-muted-foreground">Email</dt>
+        <dd>
+          <a href="mailto:">liam@acme.com</a>
+        </dd>
+      </div>
+      <div className="flex items-center justify-between">
+        <dt className="text-muted-foreground">Phone</dt>
+        <dd>
+          <a href="tel:">+1 234 567 890</a>
+        </dd>
+      </div>
+    </dl>
+  </div>
+);

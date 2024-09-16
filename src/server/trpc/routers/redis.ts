@@ -1,23 +1,25 @@
 import { redis } from "@/lib/redis";
 import { procedure, router } from "..";
-import { z } from "zod";
-import { JsonCartDataSchema } from "@/server/paymongo/resource/zod.checkout";
+import { RedisGetCartSchema, RedisSetCartSchema } from "@/server/redis/cart";
+import { RedisGetLikeSchema, RedisSetLikeSchema } from "@/server/redis/like";
 
-const RedisJsonGetSchema = z.string();
-const jsonGetProcedure = procedure.input(RedisJsonGetSchema);
-const RedisJsonSetCartSchema = z.object({
-  key: z.string(),
-  dollar: z.literal("$"),
-  data: JsonCartDataSchema,
-});
-export type JsonSetCartParams = z.infer<typeof RedisJsonSetCartSchema>;
-const jsonSetCartProcedure = procedure.input(RedisJsonSetCartSchema);
+const getCartProcedure = procedure.input(RedisGetCartSchema);
+const setCartProcedure = procedure.input(RedisSetCartSchema);
+
+const getLikeProcedure = procedure.input(RedisGetLikeSchema);
+const setLikeProcedure = procedure.input(RedisSetLikeSchema);
 
 export const redisRouter = router({
-  jsonGet: jsonGetProcedure.query(async ({ input }) =>
+  getCart: getCartProcedure.query(async ({ input }) =>
     redis.json.get(input, "$"),
   ),
-  jsonSetCart: jsonSetCartProcedure.query(({ input }) =>
+  setCart: setCartProcedure.query(({ input }) =>
+    redis.json.set(input.key, input.dollar, input.data),
+  ),
+  getLike: getLikeProcedure.query(async ({ input }) =>
+    redis.json.get(input, "$"),
+  ),
+  setLike: setLikeProcedure.query(({ input }) =>
     redis.json.set(input.key, input.dollar, input.data),
   ),
 });

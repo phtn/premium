@@ -27,18 +27,17 @@ export const ProductList = (props: {
 }) => {
   const ProductInfo = useCallback(
     ({ name, short, price, brand }: ProductInfoProps) => (
-      <div className="group-hover:bg-stone-100_ mx-12 flex h-24 items-center justify-between bg-white px-6 py-4 text-gray-800 transition-all duration-500 ease-in-out portrait:mx-4 portrait:px-4">
-        <div className="relative space-y-0.5 leading-none portrait:space-y-0">
-          <p className="absolute translate-y-0 pl-[1px] font-sarabun text-[10px] font-light uppercase tracking-widest opacity-0 transition-transform duration-500 ease-out group-hover:-translate-y-1.5 group-hover:opacity-80">
+      <div className="flex h-24 items-center justify-between whitespace-nowrap bg-white px-4 py-4 text-gray-800 transition-all duration-700 ease-in-out md:mx-6 group-hover:md:mx-6 xl:mx-10 xl:px-6 portrait:mx-4 portrait:px-4">
+        <div className="relative leading-none">
+          <p className="absolute translate-y-0 pl-[1px] font-sarabun text-[10px] font-light uppercase tracking-widest opacity-0 transition-transform duration-700 ease-out group-hover:opacity-80 group-hover:md:-translate-y-3 group-hover:lg:-translate-y-2">
             {brand}
           </p>
-          <h2 className="font-ibm text-lg font-medium">{name}</h2>
-          <p className="font-ibm text-xs lowercase tracking-widest text-zinc-800">
+          <h2 className="font-ibm font-medium lg:text-lg">{name}</h2>
+          <p className="max-w-[30ch] overflow-auto text-ellipsis font-ibm text-xs lowercase tracking-widest text-zinc-800 group-hover:md:max-w-[40ch]">
             {short}
           </p>
         </div>
-        <div className="_bg-gray-800 flex h-12 items-start justify-end space-x-1 font-ibm text-2xl font-light portrait:text-2xl">
-          <p className="font-light">₱</p>
+        <div className="flex h-12 items-start justify-end space-x-1 font-ibm text-xl font-light xl:text-2xl portrait:text-2xl">
           <p className="tracking-tight">{formatAsMoney(price)}</p>
         </div>
       </div>
@@ -59,9 +58,9 @@ export const ProductList = (props: {
       <Link
         href={`/shop/${slug}/${productId}`}
         key={productId}
-        className="group overflow-auto hover:opacity-100"
+        className="group pointer-events-auto overflow-auto transition-all duration-300 hover:opacity-100 hover:md:shadow-md hover:md:shadow-default"
       >
-        <div className="_border-b-[0.33px] _border-r-[0.33px] group w-full overflow-auto rounded-none border-default-400 portrait:border-[0.33px]">
+        <div className="w-full overflow-auto rounded-none border-[0.33px] border-x-[0.33px] border-white group-hover:md:border-default-400/30 portrait:border-default-400/60">
           <ProductImage
             src={dimensions ?? "/svg/re-up_admin_logo.svg"}
             className="flex h-96 w-full items-center justify-center overflow-auto bg-white object-center portrait:h-fit"
@@ -74,7 +73,7 @@ export const ProductList = (props: {
   );
   return (
     <div className="flex w-screen justify-center">
-      <div className="_border-l-[0.33px] _border-t-[0.33px] _border-default-400 mx-1 grid w-full grid-cols-1 scroll-smooth sm:grid-cols-2 md:grid-cols-3 portrait:mx-0 portrait:gap-y-2 portrait:border-0">
+      <div className="mx-1 grid w-full grid-cols-1 gap-y-2 scroll-smooth md:grid-cols-2 lg:grid-cols-3 portrait:mx-0 portrait:gap-y-2 portrait:border-0">
         {props.products?.map((product) => (
           <ProductItem key={product.productId} {...product} />
         ))}

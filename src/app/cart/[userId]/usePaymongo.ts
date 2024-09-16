@@ -5,18 +5,22 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export const usePaymongo = () => {
-  const [loading, setLoading] = useState(false);
+  const [pending, setLoading] = useState(false);
+  const [error, setError] = useState<Error>();
   const router = useRouter();
-  const createCS = async (params: CheckoutParams) => {
+
+  const createCS = async (params: CheckoutParams | undefined) => {
     setLoading(true);
-    await createCheckout(params)
-      .then((resource) => {
-        setLoading(false);
-        const checkoutURL = resource.attributes.checkout_url;
-        router.push(checkoutURL);
-      })
-      .catch(errHandler(setLoading));
+    if (params) {
+      await createCheckout(params)
+        .then((resource) => {
+          setLoading(false);
+          const checkoutURL = resource.attributes.checkout_url;
+          router.push(checkoutURL);
+        })
+        .catch(errHandler(setLoading, setError));
+    }
   };
 
-  return { createCS, loading };
+  return { createCS, pending, error };
 };

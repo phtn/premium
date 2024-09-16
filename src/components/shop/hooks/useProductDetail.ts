@@ -1,10 +1,16 @@
-import { jsonGet, jsonSetCart } from "@/lib/redis/caller";
+import {
+  redisGetCart,
+  redisGetLike,
+  redisSetCart,
+  redisSetLike,
+} from "@/lib/redis/caller";
 import type { SelectProduct } from "@/server/db/schema";
 import type {
   Attributes,
-  JsonCartData,
   LineItem,
 } from "@/server/paymongo/resource/zod.checkout";
+import type { RedisCartData } from "@/server/redis/cart";
+import type { LikeAttributes, RedisLikeData } from "@/server/redis/like";
 import { errHandler, generateRef, Ok, toggleState } from "@/utils/helpers";
 import { useCallback, useMemo, useState } from "react";
 
@@ -14,6 +20,7 @@ export const useProductDetail = (
 ) => {
   const [product, setProduct] = useState<SelectProduct>();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error>();
   const [quantity, setQuantity] = useState(1);
   const [incart, setIncart] = useState(true);
   const [liked, setLiked] = useState(false);
@@ -27,7 +34,13 @@ export const useProductDetail = (
     setQuantity((prev) => (prev === 1 ? 1 : prev - 1));
   };
 
-  const toggleLike = () => toggleState(setLiked);
+  const toggleLike = (attribs: LikeAttributes) => () => {
+    createRedisLike(userId, attribs)
+      .then(Ok(setLoading, "Updated your favorites!"))
+      .catch(errHandler(setLoading, setError));
+    console.log(attribs);
+    toggleState(setLiked);
+  };
   const toggleIncart = () => setIncart(true);
 
   const getAmount = useCallback(() => {
@@ -40,7 +53,7 @@ export const useProductDetail = (
     if (!product) return;
     const description =
       product.description +
-      `--${product.brand}|>${product.price}|>${product.imageUrl}|>${product.stock}|>${product.category}|>${product.subcategory}|>${product.size}|>${product.count}|>${product.countUnit}|>${product.weight}|>${product.weightUnit}**`;
+      `--${product.productId}|>${product.name}|>${product.brand}|>${product.price}|>${product.imageUrl}|>${product.stock}|>${product.category}|>${product.subcategory}|>${product.size}|>${product.count}|>${product.countUnit}|>${product.weight}|>${product.weightUnit}**`;
     return description;
   }, [product]);
 
@@ -69,10 +82,12 @@ export const useProductDetail = (
   const createRedisCart = async () => {
     setLoading(true);
     if (!userId) return;
-    const index = (await jsonGet(`cart_${userId}`)) as JsonCartData[] | null;
+    const index = (await redisGetCart(`cart_${userId}`)) as
+      | RedisCartData[]
+      | null;
 
     if (!index) {
-      return await jsonSetCart({
+      return await redisSetCart({
         key: `cart_${userId}`,
         dollar: "$",
         data: {
@@ -89,7 +104,7 @@ export const useProductDetail = (
 
     if (!updatedLineItems) return;
 
-    return await jsonSetCart({
+    return await redisSetCart({
       key: `cart_${userId}`,
       dollar: "$",
       data: {
@@ -129,7 +144,43 @@ export const useProductDetail = (
     addToCart,
     incart,
     toggleIncart,
+    error,
   };
+};
+
+const createRedisLike = async (
+  userId: string | undefined,
+  attribs: LikeAttributes,
+) => {
+  if (!userId) return;
+  const type = userId.includes("guest") ? "guest" : "user";
+  const index = (await redisGetLike(`like_${userId}`)) as
+    | RedisLikeData[]
+    | null;
+
+  if (!index) {
+    return await redisSetLike({
+      key: `like_${userId}`,
+      dollar: "$",
+      data: {
+        userId,
+        type,
+        likes: [{ ...attribs, createdAt: Date.now() }],
+        updatedAt: Date.now(),
+      },
+    });
+  }
+
+  const likes = index[0]?.likes;
+  likes?.push(attribs);
+  const data = {
+    userId,
+    type,
+    likes,
+    updatedAt: Date.now(),
+  } as RedisLikeData;
+
+  return await redisSetLike({ key: `like_${userId}`, dollar: "$", data });
 };
 
 export const attribDefaults: Omit<

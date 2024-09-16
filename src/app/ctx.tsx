@@ -19,14 +19,58 @@ import {
 import { useFetchDB } from "./hooks";
 import type {
   CheckoutParams,
-  JsonCartData,
   LineItem,
 } from "@/server/paymongo/resource/zod.checkout";
 import { useAuthState } from "@/utils/hooks/authState";
 import { auth } from "@/lib/firebase/config";
 import { errHandler, Ok } from "@/utils/helpers";
-import { jsonGet, jsonSetCart } from "@/lib/redis/caller";
+import { redisGetCart, redisSetCart } from "@/lib/redis/caller";
 import { attribDefaults } from "@/components/shop/hooks/useProductDetail";
+import { type User } from "firebase/auth";
+import { getSessionId } from "./actions";
+import type { RedisCartData } from "@/server/redis/cart";
+
+export const AuthCtx = createContext<{ user: User | null } | null>(null);
+
+export const AuthProvider = ({ children }: PropsWithChildren) => {
+  const [guestId, setGuestId] = useState<string | undefined>();
+  const { user } = useAuthState(auth);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const setUserSession = async () => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        if (!guestId) {
+          try {
+            const id = await getSessionId();
+            setGuestId(`guest_${id}`);
+            setCurrentUser({ uid: `guest_${id}` } as User); // Set guest user
+          } catch (error) {
+            console.error("Error generating guest ID:", error);
+          }
+        } else {
+          setCurrentUser({ uid: guestId } as User);
+        }
+      }
+    };
+
+    setUserSession().catch(console.log);
+  }, [user, guestId]); // Dependencies to run effect when user or guestId changes
+
+  return (
+    <AuthCtx.Provider value={{ user: currentUser }}>
+      {children}
+    </AuthCtx.Provider>
+  );
+};
+
+export const useAuthContext = () => {
+  const context = useContext(AuthCtx);
+  if (!context) throw new Error();
+  return context;
+};
 
 interface DBValues {
   users: SelectUser[] | undefined;
@@ -55,112 +99,128 @@ export const useDBContext = () => {
 interface CartCtxValues {
   itemCount: number | null;
   itemList: LineItem[] | undefined;
-  cartData: JsonCartData | null | undefined;
+  cartData: RedisCartData | null | undefined;
   loading: boolean;
   setItemCount: Dispatch<SetStateAction<number>>;
   setAmount: Dispatch<SetStateAction<number>>;
-  getCartItems: () => Promise<void>;
+  getCartItems: (userId: string | null) => Promise<LineItem[] | undefined>;
   deleteItem: (name: string) => Promise<void>;
   amount: number | undefined;
   refNumber: string | undefined;
   updateCart: (list: ItemProps[]) => Promise<void>;
   updated: number | undefined;
-  checkoutPayload: CheckoutParams | undefined;
+  checkoutParams: CheckoutParams | undefined;
 }
 export const CartCtx = createContext<CartCtxValues | null>(null);
 export const CartData = ({ children }: PropsWithChildren) => {
-  const { user } = useAuthState(auth);
+  const { user } = useAuthContext();
+
   const [itemCount, setItemCount] = useState(0);
-  const [cartData, setCartData] = useState<JsonCartData | null>();
+  const [cartData, setCartData] = useState<RedisCartData | null>();
   const [loading, setLoading] = useState(false);
   const [refNumber, setRefNumber] = useState<string | undefined>();
   const [amount, setAmount] = useState<number>(0);
   const [itemList, setItemList] = useState<LineItem[] | undefined>();
   const [updated, setUpdated] = useState<number>();
-  const [checkoutPayload, setCheckoutPayload] = useState<
+  const [checkoutParams, setCheckoutParams] = useState<
     CheckoutParams | undefined
   >();
 
-  const getCartItems = useCallback(async () => {
-    const data = (await jsonGet(`cart_${user?.uid}`)) as JsonCartData[];
-    const { lineItems, cartD } = getCartData(data);
+  const isGuest = user?.uid?.includes("guest");
 
-    setRefNumber(cartD?.data.attributes.reference_number);
+  const descriptor = isGuest
+    ? `Guest checkout: ID-${user?.uid}`
+    : `${user?.displayName}: ${user?.email}`;
 
-    setUpdated(cartD?.updated);
+  const getCartItems = useCallback(
+    async (userId: string | null) => {
+      const data = (await redisGetCart(`cart_${userId}`)) as RedisCartData[];
+      const { lineItems, cartD } = getCartData(data);
 
-    setItemList(lineItems);
+      setRefNumber(cartD?.data.attributes.reference_number);
 
-    setAmount(getTotalAmount(lineItems));
+      setUpdated(cartD?.updated);
 
-    setCartData(cartD);
-    const count = getCount(lineItems);
+      setItemList(lineItems);
 
-    count && setItemCount(count);
+      setAmount(getTotalAmount(lineItems));
 
-    setCheckoutPayload({
-      data: {
-        attributes: {
-          ...attribDefaults,
-          line_items: paymongoReady(lineItems)!,
-          reference_number: refNumber,
-          statement_descriptor: "descriptor",
-          description: "description",
-        },
-      },
-    });
-  }, [setItemCount, user?.uid, refNumber]);
+      setCartData(cartD);
+      const count = getCount(lineItems);
+
+      count && setItemCount(count);
+
+      if (lineItems) {
+        setCSParams(setCheckoutParams, lineItems, refNumber, descriptor);
+      }
+
+      return lineItems;
+    },
+    [setItemCount, refNumber, descriptor],
+  );
 
   const deleteItem = useCallback(
     async (name: string) => {
       setLoading(true);
       const newItems = deleteCartItem(itemList, name);
+      setCSParams(setCheckoutParams, newItems, refNumber, descriptor);
       const data =
         cartData &&
         (Object.assign({}, cartData, {
           ...(cartData.data.attributes.line_items = newItems),
           updated: Date.now(),
-        }) as JsonCartData);
-      data &&
-        (await jsonSetCart({
+        }) as RedisCartData);
+      if (data) {
+        await redisSetCart({
           key: `cart_${user?.uid}`,
           dollar: "$",
           data,
         })
-          .then(Ok(setLoading, "Cart updated."))
-          .catch(errHandler(setLoading)));
+          .then(() => {
+            Ok(setLoading, "Cart updated.");
+          })
+          .catch(errHandler(setLoading));
+      }
     },
-    [cartData, itemList, user?.uid],
+    [cartData, itemList, user?.uid, refNumber, descriptor],
   );
 
   const updateCart = useCallback(
     async (list: ItemProps[]) => {
       setLoading(true);
       const newItems = createLineItems(list);
+      setCSParams(setCheckoutParams, newItems, refNumber, descriptor);
       const data =
         cartData &&
         Object.assign({}, cartData, {
           ...(cartData.data.attributes.line_items = newItems),
           updated: Date.now(),
         });
-      data &&
-        (await jsonSetCart({
+      if (data) {
+        await redisSetCart({
           key: `cart_${user?.uid}`,
           dollar: "$",
           data,
         })
-          .then(Ok(setLoading, "Cart updated."))
-          .catch(errHandler(setLoading)));
+          .then(() => {
+            Ok(setLoading, "Cart updated.");
+          })
+          .catch(errHandler(setLoading));
+      }
     },
-    [cartData, user?.uid],
+    [cartData, user?.uid, refNumber, descriptor],
   );
 
   useEffect(() => {
     setLoading(true);
-    getCartItems()
-      .catch(errHandler(setLoading))
-      .finally(() => setLoading(false));
-  }, [getCartItems]);
+    if (user?.uid) {
+      getCartItems(user.uid)
+        .catch(errHandler(setLoading))
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [getCartItems, user?.uid]);
 
   return (
     <CartCtx.Provider
@@ -177,7 +237,7 @@ export const CartData = ({ children }: PropsWithChildren) => {
         updateCart,
         updated,
         refNumber,
-        checkoutPayload,
+        checkoutParams,
       }}
     >
       {children}
@@ -185,8 +245,8 @@ export const CartData = ({ children }: PropsWithChildren) => {
   );
 };
 
-const getCartData = (data: JsonCartData[] | null) => {
-  const cartD = data?.[0] as JsonCartData | null;
+const getCartData = (data: RedisCartData[] | null) => {
+  const cartD = data?.[0] as RedisCartData | null;
   const lineItems = data?.[0]?.data.attributes.line_items;
   return { cartD, lineItems };
 };
@@ -204,6 +264,9 @@ const deleteCartItem = (
   name: string,
 ): LineItem[] => lineItems?.filter((item) => item.name !== name) ?? [];
 
+const createLineItems = (list: Omit<ItemProps, "image" | "price">[]) =>
+  list.map((item) => ({ ...item, currency: "PHP" }) as LineItem);
+
 const paymongoReady = (lineItems: LineItem[] | undefined) =>
   lineItems?.map(
     (item) =>
@@ -217,6 +280,25 @@ const paymongoReady = (lineItems: LineItem[] | undefined) =>
       }) as LineItem,
   );
 
+const setCSParams = (
+  setState: Dispatch<SetStateAction<CheckoutParams | undefined>>,
+  lineItems: LineItem[],
+  refNumber: string | undefined,
+  descriptor: string,
+) => {
+  setState({
+    data: {
+      attributes: {
+        ...attribDefaults,
+        line_items: paymongoReady(lineItems)!,
+        reference_number: refNumber,
+        statement_descriptor: descriptor,
+        description: `Oh My Skin! Skin Care`,
+      },
+    },
+  });
+};
+
 export interface ItemProps {
   image: string | null;
   name: string;
@@ -225,9 +307,6 @@ export interface ItemProps {
   amount: number;
   quantity: number;
 }
-const createLineItems = (list: Omit<ItemProps, "image" | "price">[]) =>
-  list.map((item) => ({ ...item, currency: "PHP" }) as LineItem);
-
 export const useCart = () => {
   const context = useContext(CartCtx);
   if (!context) throw new Error();

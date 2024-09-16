@@ -158,25 +158,30 @@ export function generateRef(): string {
   };
 
   const prefix = "Nx-";
-  const timestamp = Date.now()
-    .toString(36)
-    .split("")
-    .reverse()
-    .join("")
-    .slice(-6); // Take last 6 chars of timestamp
-  const randomSuffix = randomPart(6);
-  const buf = Buffer.from(timestamp + randomSuffix)
+  const timestamp = Date.now().toString().slice(9); // Take last 6 chars of timestamp
+  const randomSuffix = randomPart(3);
+  const buf = Buffer.from(randomSuffix)
     .toString("base64")
     .split("")
     .reverse()
     .join("");
 
-  return prefix + buf;
+  return prefix + timestamp + buf;
 }
 
-export function formatAsMoney(amount: number) {
-  return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 0,
+export function formatAsMoney(value: number) {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: value !== Math.floor(value) ? 2 : 0,
     maximumFractionDigits: 2,
-  }).format(amount);
+  });
+  return formatter.format(value).replace("PHP", "X");
+  // return new Intl.NumberFormat("en-US", {
+  //   currency: "PHP",
+  //   style: "currency",
+  //   minimumFractionDigits: value !== Math.floor(value) ? 2 : 0,
+  //   maximumFractionDigits: 2,
+  // }).format(value);
 }

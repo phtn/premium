@@ -9,11 +9,9 @@ import { LinkBtn } from "./buttons";
 import type { DualIcon } from "@/types";
 import { Logo } from "@/components/app/logo";
 import { motion } from "framer-motion";
-import { useAuthState } from "@/utils/hooks/authState";
-import { auth } from "@/lib/firebase/config";
 import { useCallback } from "react";
 import { Loader } from "lucide-react";
-import { useCart } from "@/app/ctx";
+import { useAuthContext, useCart } from "@/app/ctx";
 
 export interface Brand {
   label?: string;
@@ -35,7 +33,7 @@ interface TopbarProps {
   extras?: Extras[];
 }
 export function Topbar({ brand, extras }: TopbarProps) {
-  const { user } = useAuthState(auth);
+  const { user } = useAuthContext();
   const { itemCount, loading } = useCart();
 
   const CartItemCount = useCallback(() => {
@@ -59,13 +57,13 @@ export function Topbar({ brand, extras }: TopbarProps) {
                 user?.uid
                   ? extra.type === "icon"
                     ? `${extra.href}/${user.uid}`
-                    : `/account`
+                    : `/account/${user.uid}`
                   : extra.href
               }
               className="shrink-0 px-2"
             >
               {extra.type === "icon" ? (
-                <div className="-ml-5 mb-2 flex size-[24px] animate-enter items-center justify-center rounded-full border-[3px] border-white bg-gray-800 font-ibm text-[10px] font-medium text-white shadow-md">
+                <div className="-ml-5 mb-2 flex size-[24px] items-center justify-center rounded-full border-[3px] border-white bg-gray-800 font-ibm text-[10px] font-medium text-white shadow-md">
                   <CartItemCount />
                 </div>
               ) : null}

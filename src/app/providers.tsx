@@ -1,13 +1,15 @@
 import { NextUIProvider } from "@nextui-org/system";
 import { type PropsWithChildren } from "react";
 import { Toaster } from "react-hot-toast";
-import { CartData, ContextDB } from "./ctx";
+import { AuthProvider, CartData, ContextDB } from "./ctx";
 
 export function Providers({ children }: PropsWithChildren) {
   return (
     <ContextDB>
       <NextUIProvider>
-        <CartData>{children}</CartData>
+        <AuthProvider>
+          <CartData>{children}</CartData>
+        </AuthProvider>
         <Toaster
           gutter={10}
           toastOptions={{

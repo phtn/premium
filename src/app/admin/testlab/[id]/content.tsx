@@ -18,6 +18,9 @@ import type {
 } from "@/server/db/schema";
 import { DB, useCart } from "@/app/ctx";
 import { type LineItem } from "@/server/paymongo/resource/zod.checkout";
+import { formatAsMoney } from "@/utils/helpers";
+import { useAuthState } from "@/utils/hooks/authState";
+import { auth } from "@/lib/firebase/config";
 
 type ItemType =
   | SelectUser
@@ -53,6 +56,8 @@ export const ListContent = (props: { id: string }) => {
 
   const { itemList, getCartItems, deleteItem } = useCart();
 
+  const { user } = useAuthState(auth);
+
   const page = () => {
     switch (props.id) {
       case "admin":
@@ -82,7 +87,11 @@ export const ListContent = (props: { id: string }) => {
       case "cart":
         return {
           list: itemList,
-          fn: getCartItems,
+          fn: () => {
+            if (user?.uid) {
+              return getCartItems(user.uid);
+            }
+          },
           IterCard: CartItemCard as CardComponent,
         };
       default:
@@ -113,7 +122,9 @@ export const ListContent = (props: { id: string }) => {
           getCategories(),
         );
       } else if ("amount" in item) {
-        await deleteItem(item.name).then(() => getCartItems());
+        await deleteItem(item.name).then(() => {
+          if (user?.uid) return getCartItems(user?.uid);
+        });
       }
     },
     [
@@ -127,6 +138,7 @@ export const ListContent = (props: { id: string }) => {
       getAdmins,
       deleteItem,
       getCartItems,
+      user?.uid,
     ],
   );
 
@@ -257,28 +269,35 @@ const ProductCard = ({ item, children }: CardProps<SelectProduct>) => {
 };
 
 const CartItemCard = ({ item, children }: CardProps<LineItem>) => {
+  const meco = item.description.split("--");
+  const stageSep = meco[1]?.split("|>");
+  const [id, name, brand, price, image, stock] = stageSep!;
   return (
     <Card className="max-w-[400px] p-3">
-      <Header
-        avatar={"/svg/re-up_admin_logo.svg"}
-        title={item.name}
-        subtext={item.quantity}
-      >
+      <Header avatar={image} title={item.name} subtext={formatAsMoney(+price!)}>
         {children}
       </Header>
-      <CardBody className="px-3 py-0 text-small text-default-400">
-        {item.description}
+      <CardBody className="px-3 py-0 text-xs">
+        <div className="flex items-center space-x-6 opacity-60">
+          <div>
+            {name}
+            {meco[0]}
+          </div>
+        </div>
       </CardBody>
       <CardFooter className="gap-3">
-        <Extra label="total amount" value={item.amount} />
-        <Extra label="currency" value={item.currency} />
+        <Extra label="id" value={id} />
+        <Extra label="brand" value={brand} />
+        <Extra label="stock" value={stock} />
+        <Extra label="qty" value={item.quantity} />
+        <Extra label="amount" value={item.amount} />
       </CardFooter>
     </Card>
   );
 };
 
 interface HeaderProps {
-  avatar: string;
+  avatar: string | undefined;
   title: string;
   subtext: string | number;
   children?: ReactNode;
@@ -288,12 +307,10 @@ const Header = ({ avatar, title, subtext, children }: HeaderProps) => (
     <div className="flex gap-6">
       <Avatar isBordered radius="full" size="md" src={avatar} />
       <div className="flex flex-col items-start justify-center gap-1">
-        <h4 className="text-small font-semibold leading-none text-default-600">
+        <h4 className="text-xs font-semibold leading-none text-default-600">
           {title}
         </h4>
-        <h5 className="text-small tracking-tight text-default-400">
-          {subtext}
-        </h5>
+        <h5 className="text-xs text-default-500">{subtext}</h5>
       </div>
     </div>
     {children}
@@ -304,8 +321,10 @@ const Extra = (props: {
   label: string;
   value: string | number | boolean | null | undefined;
 }) => (
-  <div className="flex gap-1 text-xs">
+  <div className="flex gap-1 whitespace-nowrap text-xs">
     <p className="font-medium text-default-600">{props.label}</p>
-    <p className="text-default-400">{props.value}</p>
+    <p className="max-w-[8ch] overflow-clip font-light text-default-500">
+      {props.value}
+    </p>
   </div>
 );

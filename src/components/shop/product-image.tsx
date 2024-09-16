@@ -17,7 +17,7 @@ export function ProductImage({ className = "", src }: ProductImageProps) {
         height={0}
         unoptimized
         priority
-        className="aspect-square w-auto bg-white object-cover transition-transform duration-500 ease-in-out hover:scale-[175%] hover:rounded-full hover:shadow-xl md:h-72 lg:h-96"
+        className="aspect-square w-auto bg-white object-cover transition-transform duration-500 ease-in-out hover:scale-[175%] hover:rounded-full hover:shadow-xl hover:shadow-default/60 md:h-72 lg:h-96"
       />
     </div>
   );

@@ -1,11 +1,9 @@
 "use client";
 
-import { useCart } from "@/app/ctx";
-import { auth } from "@/lib/firebase/config";
+import { useAuthContext, useCart } from "@/app/ctx";
 import type { SelectCategory, SelectProduct } from "@/server/db/schema";
 import { cn } from "@/utils/cn";
 import { errHandler, formatAsMoney } from "@/utils/helpers";
-import { useAuthState } from "@/utils/hooks/authState";
 import {
   ArrowLeftIcon,
   CheckCircleIcon,
@@ -32,13 +30,14 @@ import { ListImage, ProductImage } from "./product-image";
 import MotionNumber from "motion-number";
 import type { DualIcon } from "@/types";
 import { Link } from "@nextui-org/react";
+import type { LikeAttributes } from "@/server/redis/like";
 
 export function ProductDetails(props: {
   category: SelectCategory | null;
   product: SelectProduct;
 }) {
   const { product } = props;
-  const { user } = useAuthState(auth);
+  const { user } = useAuthContext();
   const { setItemCount, setAmount } = useCart();
 
   const {
@@ -51,7 +50,9 @@ export function ProductDetails(props: {
     addToCart,
     incart,
     toggleIncart,
-  } = useProductDetail(user?.uid, user?.email);
+  } = useProductDetail(user?.uid, user?.email ?? `${user?.uid}@ohmyskin.com`);
+
+  const { productId, name, category, subcategory, price } = product;
 
   useEffect(() => {
     if (product) {
@@ -88,7 +89,7 @@ export function ProductDetails(props: {
       },
     ];
     return (
-      <div className="h-full flex-shrink-0 rounded-lg border bg-white pb-6">
+      <div className="h-fit flex-shrink-0 rounded-lg border bg-white portrait:h-full portrait:pb-6">
         {detailData.map((detail) => (
           <Accordion
             collapsible
@@ -146,12 +147,8 @@ export function ProductDetails(props: {
 
   const BackButton = useCallback(
     (props: { backFn: VoidFunction }) => (
-      <div className="flex h-10 items-center">
-        <Button
-          className=" bg-transparent text-gray-800"
-          size="sm"
-          onPress={props.backFn}
-        >
+      <div className="flex h-10 items-center text-gray-800">
+        <Button className="bg-transparent" size="sm" onPress={props.backFn}>
           <ArrowLeftIcon className="size-4" />
           <p className="font-sarabun text-sm font-light tracking-wider">
             All Products
@@ -163,22 +160,45 @@ export function ProductDetails(props: {
   );
 
   const Title = useCallback(() => {
+    const likeParams: LikeAttributes = {
+      productId,
+      name,
+      category,
+      subcategory,
+      price,
+    };
     return (
       <div className="flex items-center justify-between space-x-4 whitespace-nowrap pr-2">
         <h1 className="max-w-[24ch] overflow-clip text-ellipsis font-sarabun text-2xl font-light leading-none text-gray-800">
           {product.name}
         </h1>
-        <button className="-mb-2 active:scale-[95%]" onClick={toggleLike}>
+        <button
+          className="group -mb-2 active:scale-[95%]"
+          onClick={toggleLike(likeParams)}
+        >
           <HeartIcon
-            className={cn("size-6 shrink-0 text-gray-400/60", {
-              "animate-enter fill-rose-600/80 stroke-[0.33px] text-gray-700/60":
-                liked,
-            })}
+            className={cn(
+              "size-7 shrink-0 text-gray-400/60",
+              {
+                "animate-enter fill-rose-600/70 stroke-[0.33px] text-rose-700/60":
+                  liked,
+              },
+              "shadow-rose group-hover:drop-shadow-md",
+            )}
           />
         </button>
       </div>
     );
-  }, [toggleLike, product.name, liked]);
+  }, [
+    toggleLike,
+    product.name,
+    liked,
+    productId,
+    name,
+    category,
+    subcategory,
+    price,
+  ]);
 
   const ShortDesc = useCallback(
     () => (
@@ -259,7 +279,7 @@ export function ProductDetails(props: {
     () => (
       <div
         className={cn(
-          "absolute z-50 flex h-32 w-full animate-enter flex-col items-center justify-center space-y-6 rounded-xl bg-gradient-to-b from-default via-default-500/10 to-transparent px-6 backdrop-blur-md lg:h-[12rem]",
+          "absolute z-50 flex h-[13.5rem] w-full animate-enter flex-col items-center justify-center space-y-6 rounded-xl bg-gradient-to-b from-default via-default-500/10 to-transparent px-6 backdrop-blur-md",
           { hidden: incart },
         )}
       >
@@ -299,15 +319,10 @@ export function ProductDetails(props: {
   }, [product.dimensions]);
 
   return (
-    <div
-      className={cn(
-        "relative mx-auto max-w-7xl space-y-6 p-4 md:border-primary lg:border-danger xl:border-warning",
-        "pointer-events-auto ",
-      )}
-    >
+    <div className="relative mx-auto max-w-7xl space-y-6 p-4">
       <BackButton backFn={backFn} />
       <div className="grid grid-cols-1 gap-x-0 md:grid-cols-10 lg:max-h-96 portrait:max-h-[80rem] portrait:gap-y-6">
-        <div className="_border col-span-5 h-full space-y-4 border-primary">
+        <div className="col-span-5 h-full space-y-4">
           <ProductImage src={product.dimensions ?? "/images/aqua_al_v1.avif"} />
           <div className="relative flex h-[96px] flex-col justify-start scroll-smooth">
             <div className="pointer-events-none absolute flex h-[90px] w-full bg-gradient-to-l from-white/60 from-[2%] via-transparent via-[12%] to-transparent to-100% pr-6" />
@@ -315,7 +330,7 @@ export function ProductDetails(props: {
           </div>
         </div>
 
-        <div className="_border col-span-5 flex w-full justify-start border-primary pl-2 lg:pl-16 portrait:pl-0">
+        <div className="col-span-5 flex w-full justify-start pl-2 lg:pl-16 portrait:pl-0">
           <div className="-my-4 flex w-full max-w-md flex-col items-start justify-between rounded-none border-[0.33px] border-default-400/80 bg-default/20 p-4 shadow-lg shadow-default/80 portrait:h-full portrait:border-0 portrait:bg-transparent portrait:px-0 portrait:shadow-none">
             <div className="relative h-40 w-full space-y-6">
               <div className="space-y-0.5">
@@ -325,7 +340,6 @@ export function ProductDetails(props: {
 
               <div className="relative z-20 flex h-[6rem] w-full items-end overflow-auto whitespace-nowrap">
                 <div className="flex w-[8ch] items-center bg-gray-800 px-3 py-2 font-ibm text-2xl font-light text-white portrait:text-xl">
-                  <p className="font-thin">₱</p>
                   <p className="">{formatAsMoney(product.price)}</p>
                 </div>
                 <div
@@ -366,7 +380,7 @@ export function ProductDetails(props: {
             </div>
 
             <Actions />
-            <div className="relative h-fit w-full overflow-auto pb-14 lg:h-[12rem]">
+            <div className="relative h-fit w-full overflow-auto pb-4 lg:h-[13rem]">
               <Checkout />
               <Detail />
             </div>

@@ -59,7 +59,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)"],
+        sans: ["var(--font-geist-sans)"],
+        inter: ["var(--font-inter"],
         mono: ["var(--font-geist-mono)"],
         sarabun: ["var(--font-sarabun)"],
         ibm: ["var(--font-ibm)"],

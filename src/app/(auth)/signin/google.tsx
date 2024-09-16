@@ -3,14 +3,10 @@ import { auth } from "@/lib/firebase/config";
 import { useSignInGoogle } from "@/utils/hooks/sso";
 import { errHandler } from "@/utils/helpers";
 import { type FormEvent } from "react";
-import { useAuthState } from "@/utils/hooks/authState";
 
 export const GoogleSignin = () => {
-  const { user } = useAuthState(auth);
-
   const [sign, current, loading, oauth, error] = useSignInGoogle(auth);
   const handleOnPress = async (e: FormEvent<HTMLButtonElement>) => {
-    console.log(user);
     e.preventDefault();
     await sign()
       .then((result) => {

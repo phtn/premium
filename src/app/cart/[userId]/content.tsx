@@ -161,6 +161,8 @@ export const CartContent = ({ userId }: CartContentProps) => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  console.log(state.list);
+
   const incrFn = useCallback((name: string) => {
     dispatch({ type: "INCREMENT", payload: { name } });
   }, []);
@@ -291,7 +293,7 @@ export const CartContent = ({ userId }: CartContentProps) => {
 
   return (
     <div className="flex w-full flex-col items-center bg-white">
-      <div className="w-full py-4">
+      <div className="w-full bg-white py-4">
         <Topbar
           extras={[{ label: "Sign in", href: "/signin", type: "text" }]}
         />
@@ -326,24 +328,10 @@ const Item = ({ itemProps, fn }: ListItem) => {
   const { name, description, quantity } = itemProps;
   const meco = description?.split("--");
   const stageSep = meco?.[1]?.split("|>");
-  const [
-    id,
-    productName,
-    brand,
-    price,
-    image,
-    stock,
-    cat,
-    subcat,
-    sz,
-    cunt,
-    cuntU,
-    wgt,
-    wgtU,
-  ] = stageSep!;
+  const [id, productName, brand, price, image, stock, cat, vol, unit] =
+    stageSep!;
 
   const handleIncr = () => {
-    console.log(stock, subcat, sz, cunt, cuntU);
     fn.incrFn(productName!);
   };
   const handleDecr = () => {
@@ -391,8 +379,11 @@ const Item = ({ itemProps, fn }: ListItem) => {
               {cat}
             </p>
             <p className="font-arc text-[10px] font-light opacity-60">
-              {wgt}
-              {wgtU?.substring(0, wgtU.indexOf("*"))}
+              {vol}
+              {unit}
+            </p>
+            <p className="font-arc text-[10px] font-light opacity-60">
+              in-stock: {stock}
             </p>
           </div>
         </div>

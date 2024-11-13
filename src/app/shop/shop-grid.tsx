@@ -89,7 +89,7 @@ export const ShopGrid = ({ slug, preloadedp, preloadedc }: ShopGridProps) => {
       </Twilight>
       <div className="absolute top-20 z-50 mx-2 flex flex-col items-center justify-center portrait:w-screen">
         <Tabs
-          color="warning"
+          color="primary"
           variant="solid"
           className="my-6 rounded-xl opacity-100 shadow-md"
         >

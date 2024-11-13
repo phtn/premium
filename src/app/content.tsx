@@ -17,7 +17,7 @@ export const PageCont = () => {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center">
+    <main className="flex min-h-screen flex-col items-center bg-white">
       <div className="flex h-full w-full flex-col items-center">
         <div className="md:h-8" />
         {Nav}

@@ -18,11 +18,11 @@ export default function AddToCartButton({
   return (
     <Button
       size="lg"
-      color="default"
+      color="success"
       variant="shadow"
       onPress={addFn}
       className={cn(
-        "border-[0.33px] border-default-500/30 px-1 text-sm font-light transition-all duration-300 ease-out",
+        "border-[0.33px] border-primary-500/30 px-1 text-sm font-light transition-all duration-300 ease-out",
         { "px-6": count === 1 },
         `${productId}`,
       )}
@@ -31,7 +31,7 @@ export default function AddToCartButton({
         <div className="flex items-center space-x-2 px-3 font-ibm">
           <div className="flex items-center space-x-2">
             Add
-            <div className="mx-2 flex size-[24px] items-center justify-center rounded-full border-[2px] border-white bg-gray-800 font-ibm text-xs font-medium text-white shadow-md">
+            <div className="mx-2 flex items-center justify-center rounded-full font-ibm text-sm font-medium text-background">
               <MotionNumber
                 value={count}
                 format={{ notation: "compact", maximumFractionDigits: 0 }}
@@ -39,12 +39,12 @@ export default function AddToCartButton({
             </div>
             items
           </div>
-          <ShoppingBagIcon className="size-5 fill-sky-50 stroke-1 text-gray-800/90" />
+          <ShoppingBagIcon className="size-5 fill-background/5 text-background/80" />
         </div>
       ) : (
         <div className="flex items-center space-x-2">
-          <p>Add item</p>{" "}
-          <ShoppingBagIcon className="size-5 fill-sky-50 stroke-1 text-gray-800/90" />
+          <p>Add item</p>
+          <ShoppingBagIcon className="size-5 fill-background/5 text-background/80" />
         </div>
       )}
     </Button>

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 interface AddPageProps {
   params: {
-    id: string;
+    tab: string;
   };
 }
 
@@ -18,7 +18,7 @@ const AddPage = async ({ params }: AddPageProps) => {
   const preloadedCategories = await preloadQuery(api.categories.get.all);
   return (
     <AddContent
-      {...params}
+      tab={params.tab}
       preloadedProducts={preloadedProducts}
       preloadedCategories={preloadedCategories}
     />

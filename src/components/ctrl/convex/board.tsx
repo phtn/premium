@@ -10,7 +10,8 @@ import {
 } from "react";
 
 import { usePathname, useRouter } from "next/navigation";
-import { AdminContent, CatContent, ProductContent, UserContent } from "./tabs";
+import { CatContent, ProductContent } from "./tabs";
+import { CategoryForm } from "./forms/category";
 
 export interface CTRLTabItem {
   id: string | number;
@@ -30,33 +31,20 @@ export function CTRLBoard({ children }: CTRLTabProps) {
   const tabs: CTRLTabItem[] = useMemo(
     () => [
       {
-        id: 0,
-        href: "/master",
-        value: "admin",
-        label: "Admin",
-        content: AdminContent,
-      },
-      {
-        id: 1,
-        href: "/user",
-        value: "user",
-        label: "User",
-        content: UserContent,
-      },
-      {
         id: 2,
+        href: "/category",
+        value: "category",
+        label: "Category",
+        content: CategoryForm,
+      },
+      {
+        id: 3,
         href: "/product",
         value: "product",
         label: "Product",
         content: ProductContent,
       },
-      {
-        id: 3,
-        href: "/category",
-        value: "category",
-        label: "Category",
-        content: CatContent,
-      },
+
       {
         id: 4,
         href: "/cart",
@@ -70,20 +58,24 @@ export function CTRLBoard({ children }: CTRLTabProps) {
 
   const handleSelect = useCallback(
     (k: Key) => {
-      router.push(`/admin/testlab/${k}`);
+      router.push(`/admin/add/${k}`);
       setSelected(k as string);
     },
     [router, setSelected],
   );
 
   return (
-    <div className="flex w-full flex-col gap-4 tracking-tight">
+    <div className="flex w-2/3 flex-col gap-x-6 tracking-tight">
       <Tabs
-        // isVertical
-        defaultSelectedKey={"user"}
+        items={tabs}
+        color="primary"
+        variant="underlined"
+        defaultSelectedKey={"category"}
         selectedKey={selected}
         onSelectionChange={handleSelect}
-        items={tabs}
+        classNames={{
+          tab: "font-medium",
+        }}
       >
         {tabs.map((tab) => (
           <Tab key={tab.value} title={tab.label}>

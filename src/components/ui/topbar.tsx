@@ -10,9 +10,9 @@ import type { DualIcon } from "@/types";
 import { Logo } from "@/components/app/logo";
 import { motion } from "framer-motion";
 import { useCallback } from "react";
-import { Loader } from "lucide-react";
 import { useAuthCtx } from "@/app/ctx/auth";
 import { useCart } from "@/app/ctx/cart";
+import { MinusIcon } from "@heroicons/react/24/outline";
 
 export interface Brand {
   label?: string;
@@ -34,19 +34,22 @@ interface TopbarProps {
   extras?: Extras[];
 }
 export function Topbar({ brand, extras }: TopbarProps) {
-  const { user } = useAuthCtx();
+  const { user, uid } = useAuthCtx();
   const { itemCount, loading } = useCart();
-  console.log(itemCount);
 
   const CartItemCount = useCallback(() => {
     if (loading)
-      return <Loader className="size-3 shrink-0 animate-spin text-white" />;
-    return <p className="animate-enter">{itemCount}</p>;
+      return (
+        <MinusIcon className="size-3 animate-spin stroke-[2px] text-white" />
+      );
+    return (
+      <p className="animate-enter font-sarabun font-semibold">{itemCount}</p>
+    );
   }, [loading, itemCount]);
 
   const NavContentExtra = useCallback(() => {
     return (
-      <NavbarContent justify="end">
+      <NavbarContent justify="end" className="bg-white">
         {extras?.map((extra, i) => (
           <NavbarItem key={`${i}_${extra.label}`}>
             <LinkBtn
@@ -56,16 +59,16 @@ export function Topbar({ brand, extras }: TopbarProps) {
                 extra.type === "icon" ? "" : (user?.displayName ?? extra.label)
               }
               href={
-                user?.uid
+                uid
                   ? extra.type === "icon"
-                    ? `${extra.href}/${user.uid}`
-                    : `/account/${user.uid}`
+                    ? `${extra.href}/${uid}`
+                    : `/account/${uid}`
                   : extra.href
               }
               className="shrink-0 px-2"
             >
               {extra.type === "icon" ? (
-                <div className="-ml-5 mb-2 flex size-[24px] items-center justify-center rounded-full border-[3px] border-white bg-gray-800 font-ibm text-[10px] font-medium text-white shadow-md">
+                <div className="-ml-5 mb-2 flex size-[24px] items-center justify-center rounded-full border-[2px] border-white bg-foreground font-ibm text-[10.5px] font-medium text-white shadow-md">
                   <CartItemCount />
                 </div>
               ) : null}
@@ -74,9 +77,9 @@ export function Topbar({ brand, extras }: TopbarProps) {
         ))}
       </NavbarContent>
     );
-  }, [extras, CartItemCount, user]);
+  }, [extras, CartItemCount, user, uid]);
   return (
-    <Navbar shouldHideOnScroll isBlurred maxWidth="xl">
+    <Navbar shouldHideOnScroll isBlurred maxWidth="xl" className="bg-white">
       <NavbarBrand>
         <Link href="/">
           <div>

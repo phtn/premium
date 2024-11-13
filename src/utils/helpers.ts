@@ -42,6 +42,15 @@ export const errHandler =
     setLoading(false);
     if (setError) setError(e);
   };
+export const Err =
+  <T extends Error | null | undefined>(
+    setLoading: Dispatch<SetStateAction<boolean>>,
+    msg?: string,
+  ) =>
+  (e: T) => {
+    onError(msg ?? `Error: ${e?.name}`);
+    setLoading(false);
+  };
 export const okHandler =
   <T>(
     setLoading: Dispatch<SetStateAction<boolean>>,

@@ -37,7 +37,7 @@ interface CartCtxValues {
 }
 export const CartCtx = createContext<CartCtxValues | null>(null);
 export const CartProvider = ({ children }: PropsWithChildren) => {
-  const { user } = useAuthCtx();
+  const { user, uid } = useAuthCtx();
 
   const [itemCount, setItemCount] = useState(0);
   const [cartData, setCartData] = useState<RedisCartData | null>();
@@ -51,20 +51,18 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
     CheckoutParams | undefined
   >();
 
-  const isGuest = user?.uid?.includes("guest");
-
   const createNewRef = useCallback(() => {
-    if (isGuest) {
+    if (uid?.startsWith("guest")) {
       setNewRefNumber(generateRef().toUpperCase());
     }
-  }, [isGuest]);
+  }, [uid]);
 
   useEffect(() => {
     createNewRef();
   }, [createNewRef]);
 
-  const descriptor = isGuest
-    ? `Guest checkout: ID-${user?.uid}`
+  const descriptor = !user
+    ? `Guest checkout: ID-${uid}`
     : `${user?.displayName}: ${user?.email}`;
 
   const getCartItems = useCallback(
@@ -112,7 +110,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
         }) as RedisCartData);
       if (data) {
         await redisSetCart({
-          key: `cart_${user?.uid}`,
+          key: `cart_${uid}`,
           dollar: "$",
           data,
         })
@@ -122,7 +120,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
           .catch(errHandler(setLoading));
       }
     },
-    [cartData, itemList, user?.uid, refNumber, descriptor],
+    [cartData, itemList, uid, refNumber, descriptor],
   );
 
   const updateCart = useCallback(
@@ -138,7 +136,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
         });
       if (data) {
         await redisSetCart({
-          key: `cart_${user?.uid}`,
+          key: `cart_${uid}`,
           dollar: "$",
           data,
         })
@@ -149,19 +147,19 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
           .finally(Ok(setLoading, "Cart updated & saved!"));
       }
     },
-    [cartData, user?.uid, refNumber, descriptor],
+    [cartData, uid, refNumber, descriptor],
   );
 
   useEffect(() => {
     setLoading(true);
-    if (user?.uid) {
-      getCartItems(user.uid)
+    if (uid) {
+      getCartItems(uid)
         .then(() => setLoading(false))
         .catch(errHandler(setLoading));
     } else {
       setLoading(false);
     }
-  }, [getCartItems, user?.uid]);
+  }, [getCartItems, uid]);
 
   return (
     <CartCtx.Provider

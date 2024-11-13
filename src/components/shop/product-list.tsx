@@ -15,18 +15,23 @@ interface ProductInfoProps {
 export const ProductList = (props: { products: Product[] }) => {
   const ProductInfo = useCallback(
     ({ name, short, price, brand }: ProductInfoProps) => (
-      <div className="flex h-24 items-center justify-between whitespace-nowrap bg-white px-4 py-4 text-gray-800 transition-all duration-700 ease-in-out md:mx-6 group-hover:md:mx-6 xl:mx-10 xl:px-6 portrait:mx-4 portrait:px-4">
-        <div className="relative leading-none">
-          <p className="absolute translate-y-0 pl-[1px] font-sarabun text-[10px] font-light uppercase tracking-widest opacity-0 transition-transform duration-700 ease-out group-hover:opacity-80 group-hover:md:-translate-y-3 group-hover:lg:-translate-y-2">
+      <div className="flex h-24 items-center justify-between whitespace-nowrap bg-white px-4 py-4 text-gray-800 transition-all duration-700 ease-in-out portrait:mx-4 portrait:px-4">
+        <div className="relative w-full leading-none">
+          <p className="absolute translate-y-0 pl-[1px] font-sarabun text-[10px] font-light uppercase tracking-widest opacity-0 transition-transform duration-700 ease-out group-hover:opacity-80 group-hover:md:-translate-y-3 group-hover:lg:-translate-y-2.5">
             {brand}
           </p>
-          <h2 className="font-ibm font-medium lg:text-lg">{name}</h2>
-          <p className="max-w-[30ch] overflow-auto text-ellipsis font-ibm text-xs lowercase tracking-widest text-zinc-800 group-hover:md:max-w-[40ch]">
+          <section className="flex items-center justify-between font-ibm font-medium lg:text-lg">
+            <h2>{name}</h2>
+            <p className="text-normal px-3 font-light text-stone-700">
+              {formatAsMoney(price)}
+            </p>
+          </section>
+          <p className="max-w-[54ch] overflow-auto text-ellipsis font-sarabun text-xs tracking-widest text-foreground/80 group-hover:md:max-w-[40ch]">
             {short}
           </p>
         </div>
-        <div className="flex h-12 items-start justify-end space-x-1 font-ibm text-xl font-light xl:text-2xl portrait:text-2xl">
-          <p className="tracking-tight">{formatAsMoney(price)}</p>
+        <div className="absolute bottom-0 right-0 hidden h-4 w-12 items-start justify-end space-x-1 bg-red-200 font-ibm text-xl font-light group-hover:flex xl:text-2xl portrait:text-2xl">
+          <p className="font-light tracking-tight"></p>
         </div>
       </div>
     ),
@@ -37,7 +42,7 @@ export const ProductList = (props: { products: Product[] }) => {
     ({
       product_id,
       slug,
-      dimensions,
+      photo_url,
       name,
       short_desc,
       price,
@@ -50,7 +55,7 @@ export const ProductList = (props: { products: Product[] }) => {
       >
         <div className="w-full overflow-auto rounded-none border-[0.33px] border-x-[0.33px] border-white group-hover:md:border-default-400/30 portrait:border-default-400/60">
           <ProductImage
-            src={dimensions ?? "/svg/re-up_admin_logo.svg"}
+            src={photo_url ?? "/svg/oh.svg"}
             className="flex h-96 w-full items-center justify-center overflow-auto bg-white object-center portrait:h-fit"
           />
           <ProductInfo

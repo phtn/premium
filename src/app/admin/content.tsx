@@ -16,7 +16,7 @@ import {
   RectangleGroupIcon,
   BuildingStorefrontIcon,
   ClipboardDocumentCheckIcon,
-  PlusCircleIcon,
+  PlusIcon,
 } from "@heroicons/react/24/solid";
 import {
   PackageIcon,
@@ -40,8 +40,8 @@ export function AdminBoard({ children }: PropsWithChildren) {
     },
     {
       label: "Add Entities",
-      href: "/admin/add",
-      icon: { type: "icon", content: PlusCircleIcon },
+      href: "/admin/add/category",
+      icon: { type: "icon", content: PlusIcon },
     },
     {
       label: "Customers",
@@ -113,7 +113,7 @@ export function AdminBoard({ children }: PropsWithChildren) {
             <SidebarLink
               link={{
                 label: "ADMIN",
-                href: "#",
+                href: "/",
                 icon: {
                   type: "image",
                   content: user?.photoURL ?? "/svg/oh.svg",

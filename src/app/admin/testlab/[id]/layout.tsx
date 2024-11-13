@@ -1,5 +1,5 @@
 "use client";
-import { CTRLBoard } from "@/components/ctrl/turso/board";
+import { CTRLBoard } from "@/components/ctrl/convex/board";
 import { BeakerIcon } from "@heroicons/react/24/outline";
 import { type PropsWithChildren } from "react";
 

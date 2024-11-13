@@ -1,15 +1,15 @@
 import { useCallback, useState } from "react";
 import { faker } from "@faker-js/faker";
 import { insertUser } from "@/lib/db/user";
-import { errHandler, guid, Ok } from "@/utils/helpers";
+import { errHandler, Ok } from "@/utils/helpers";
 import { InsertUserSchema } from "@/server/db/zod.user";
 import type { InsertAdmin, InsertUser } from "@/server/db/schema";
 import { CategorySchema } from "@/server/db/zod.category";
-import { type Product, ProductSchema } from "@/server/db/zod.product";
 // import { insertProduct } from "@/lib/db/product";
 import { InsertAdminSchema } from "@/server/db/zod.admin";
 import { insertAdmin } from "@/lib/db/admin";
 import { type InsertCategory } from "convex/categories/create";
+import { type InsertProduct } from "convex/products/create";
 import { useVex } from "@/app/ctx/convex";
 
 export function useAdminDB() {
@@ -107,35 +107,42 @@ export function useCatDB() {
 
 const randomCategory = {
   uid: "admin",
-  name: "Skin Care",
-  slug: "skincare",
+  name: "Fragrance",
+  slug: "fragrance",
   description:
-    "Discover the ultimate in skincare with our carefully curated collection, designed to nurture and rejuvenate every skin type. From luxurious moisturizers and gentle cleansers to potent serums and exfoliators, each product is crafted with the finest ingredients to help you achieve a radiant, healthy glow. Our skincare selection includes formulas that address a range of needs—whether it's hydration, anti-aging, acne control, or simply maintaining a balanced, natural complexion. Embrace a skincare routine that’s as unique as you are, and let your natural beauty shine every day. Explore our collection and find your new skincare essentials!",
+    "Rule society and command attention with your signature scent. Dive into our collection of frarances and let it choose you. Your next move is to tell your story.",
   photo_url:
-    "https://rustans.com/cdn/shop/files/LM_HR_PACKSHOTIMAGE_1_8_RGB.jpg?v=1725239864&width=1400",
-  remarks: "For men & women.",
+    "https://rustans.com/cdn/shop/products/nars-_0004s_0010_2648868-Bronzing_Powder_Laguna.jpg?v=1582772405&width=800",
+  remarks: "For men and women.",
 } satisfies InsertCategory;
 
 export function useProductDB() {
-  const [product, setProduct] = useState<object>({});
+  const [prod, setProduct] = useState<InsertProduct>(randomProduct);
   const [validProduct, setValidProduct] = useState(false);
   const [productLoading, setLoading] = useState(false);
   const [error] = useState<Error>();
 
+  const { product } = useVex();
+
   const createProduct = () => {
-    // const newProduct = randomProduct();
-    setProduct(dummyProduct);
-    setValidProduct(ProductSchema.safeParse(dummyProduct).success);
+    setProduct(randomProduct);
+    if (prod) {
+      setValidProduct(true);
+    }
   };
 
   const productInsert = useCallback(() => {
     setLoading(true);
     if (!product && !validProduct) return;
-  }, [product, validProduct]);
+    product
+      .create(prod)
+      .then(Ok(setLoading, "1 product added."))
+      .catch(errHandler(setLoading));
+  }, [product, validProduct, prod]);
 
   return {
     createProduct,
-    product,
+    prod,
     validProduct,
     productLoading,
     productInsert,
@@ -143,44 +150,47 @@ export function useProductDB() {
   };
 }
 
-export const randomProduct = () => ({
-  product_id: Date.now().toString(36),
-  category_id: "m0txakzd",
-  price: parseFloat(faker.commerce.price()),
-  in_stock: 10,
-  is_active: true,
-  name: faker.commerce.product(),
-  slug: `skin-care/${faker.commerce.product().toLowerCase()}`,
-  description: faker.commerce.productDescription(),
-  material: faker.commerce.productMaterial(),
-  dimensions: faker.commerce.productAdjective(),
-  remarks: faker.commerce.productAdjective(),
-  short_desc: faker.commerce.productAdjective(),
-  created_by: "m0twy921",
-  updated_at: Date.now(),
-  updated_by: "",
-});
+// export const randomProduct = () => ({
+//   product_id: Date.now().toString(36),
+//   category_id: "m0txakzd",
+//   price: parseFloat(faker.commerce.price()),
+//   in_stock: 10,
+//   is_active: true,
+//   name: faker.commerce.product(),
+//   slug: `skin-care/${faker.commerce.product().toLowerCase()}`,
+//   description: faker.commerce.productDescription(),
+//   material: faker.commerce.productMaterial(),
+//   dimensions: faker.commerce.productAdjective(),
+//   remarks: faker.commerce.productAdjective(),
+//   short_desc: faker.commerce.productAdjective(),
+//   created_by: "m0twy921",
+//   updated_at: Date.now(),
+//   updated_by: "",
+// });
 
-const dummyProduct = {
-  product_id: guid(),
-  name: "Secura Extra Large",
+const randomProduct = {
+  uid: "admin",
+  brand: "Kilian Paris",
+  name: "Blue Moon Ginger Dash",
   description:
-    "Transparent, silky smooth condoms Extra Large from Secura Condoms with more size and comfort for the larger penis. With silicone-based coating and reservoir. Odourless and tasteless. Length 180 mm, nominal width 60 mm. 48 pieces",
-  price: 2250,
+    "Blue Moon Ginger Dash Eau de Parfum is a limited fresh addition to The Liquors, inspired by Kilian Hennessy's summer cocktail, the cult beachside party drink from the 90's, Blue Lagoon, a mix of lemon, vodka and blue caraçao liquor.",
+  short_desc: "Eau de Parfum quintessential summer cocktail in scent.",
+  material: "Lemon, Calone, Vodka accord, Ginger, Ambroxan.",
+  remarks: "Olfactive family: The Liquors",
+  price: 3200,
   in_stock: 200,
-  material: "Synthetic Skin",
-  photo_url: "img003",
-  slug: "make-up/lipstick",
-  dimensions: "4g",
-  short_desc: "For hung.",
-  category_id: "m0txakzd", // Assuming categoryId for skincare
-  is_active: true,
-  is_live: false,
-  remarks: "Best seller",
-  created_by: "m0twy921",
-  updated_at: Date.now(),
-  updated_by: "admin",
-} satisfies Omit<Product, "_id" | "_creationTime">;
+  volume: "50",
+  volume_unit: "ml",
+  photo_url:
+    "https://rustans.com/cdn/shop/files/KilianBlueMoonBottle_1_1.jpg?v=1726456541&width=1400",
+  slug: "fragrance/women",
+  category: "fragrance",
+  category_id: "4d1d17fc-73ec-972f-2fc9-99c8879f30cb", // Assuming categoryId for skincare
+  // Gifts 7872dfd5-70f3-9f47-79f7-b6222ecbc7ee
+  // Skincare 4d1d17fc-73ec-972f-2fc9-99c8879f30cb
+  // Makeup df50b66f-c005-bc76-0e4e-ebf6e9767ff7
+  // Fragrance
+} satisfies InsertProduct;
 
 export const productImages = [
   "https://piliani.com.ph/cdn/shop/files/PA-IHFC_2048x2048.jpg?v=1706746911",

@@ -26,5 +26,4 @@ export const onWarn = (msg: string) =>
     },
   });
 export const onError = (msg: string) => toast.error(msg);
-
 export const onLoading = (msg: string) => toast.loading(msg);

@@ -1,13 +1,18 @@
 "use server";
 
+import { env } from "@/env";
 import { cookies } from "next/headers";
 
-export async function getSessionId() {
-  const sessionId = () => cookies().get("sessionId")?.value;
-  if (sessionId()) {
-    return sessionId();
-  } else {
-    cookies().set("sessionId", Date.now().toString(36), { secure: true });
-    return sessionId();
-  }
+const defaultOpts = {
+  secure: env.NODE_ENV === "production",
+  httpOnly: true,
+  sameSite: "lax" as const,
+};
+export async function setSessionId(id: string) {
+  cookies().set("oms--cart-id", id, { ...defaultOpts, path: "/" });
+}
+
+export async function getSessionId(): Promise<string | undefined> {
+  const sessionId = cookies().get("oms--cart-id")?.value;
+  return sessionId;
 }

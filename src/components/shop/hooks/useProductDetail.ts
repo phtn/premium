@@ -38,7 +38,6 @@ export const useProductDetail = (
     createRedisLike(userId, attribs)
       .then(Ok(setLoading, "Updated your favorites!"))
       .catch(errHandler(setLoading, setError));
-    console.log(attribs);
     toggleState(setLiked);
   };
   const toggleIncart = () => setIncart(true);
@@ -53,7 +52,7 @@ export const useProductDetail = (
     if (!product) return;
     const description =
       product.description +
-      `--${product.product_id}|>${product.name}|>${product.brand}|>${product.price}|>${product.photo_url}|>${product.in_stock}|>${product.category}|>${product.subcategory}|>${product.size}|>${product.count}|>${product.count_unit}|>${product.weight}|>${product.weight_unit}**`;
+      `--${product.product_id}|>${product.name}|>${product.brand}|>${product.price}|>${product.photo_url}|>${product.in_stock}|>${product.category}|>${product.subcategory}|>${product.volume}|>${product.volume_unit}|>${product.count_unit}|>${product.weight}|>${product.weight_unit}**`;
     return description;
   }, [product]);
 

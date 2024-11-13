@@ -6,7 +6,7 @@ import { topbarProps } from "../static";
 const ShopLayout = ({ children }: PropsWithChildren) => {
   const Navbar = useMemo(() => <Topbar {...topbarProps} />, []);
   return (
-    <div className="w-full flex-col items-center">
+    <div className="w-full flex-col items-center bg-white">
       <div className="h-8" />
       {Navbar}
       <div>{children}</div>

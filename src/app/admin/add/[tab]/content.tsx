@@ -24,12 +24,12 @@ type CardProps<T extends ItemType> = { item: T; children: ReactNode };
 type CardComponent = ComponentType<CardProps<ItemType>>;
 
 interface AddContentProps {
-  id: string;
+  tab: string;
   preloadedProducts: Preloaded<typeof api.products.get.all>;
   preloadedCategories: Preloaded<typeof api.categories.get.all>;
 }
 export const AddContent = ({
-  id,
+  tab,
   preloadedProducts,
   preloadedCategories,
 }: AddContentProps) => {
@@ -42,19 +42,7 @@ export const AddContent = ({
   const { user } = useAuthCtx();
 
   const page = () => {
-    switch (id) {
-      case "admin":
-        return {
-          list: products,
-          fn: product.get.all,
-          IterCard: ProductCard as CardComponent,
-        };
-      case "user":
-        return {
-          list: categories,
-          fn: category.get.all,
-          IterCard: CatCard as CardComponent,
-        };
+    switch (tab) {
       case "category":
         return {
           list: categories,
@@ -113,21 +101,25 @@ export const AddContent = ({
 
   return (
     <div className="h-screen w-full space-y-2 overflow-auto pb-[150px] pt-2">
-      <div className="flex items-center px-6">
-        <div className="w-full text-xs font-medium capitalize">{id} list</div>
-        <section className="flex items-center space-x-4">
-          <div className="flex items-center rounded-xl bg-slate-200/60 px-3 py-2 font-mono text-sm font-medium opacity-60">
-            <span>{list?.length}</span>
-            <span className="pl-2 text-xs font-light">items</span>
+      <div className="flex items-center px-4">
+        <section className="w-full font-arc text-sm font-medium capitalize">
+          <div className="w-fit space-x-6 rounded-md border-[0.33px] border-primary-200 bg-primary-200/20 px-3 py-2 backdrop-blur-xl">
+            <span>{tab === "category" ? "categories" : `${tab} list`}</span>
+            <span>
+              {list?.length}
+              <span className="px-1 font-light">items</span>
+            </span>
           </div>
+        </section>
+        <section className="flex items-center space-x-4">
           <Button
-            isLoading={loading}
-            size="sm"
+            size="md"
             onClick={fn}
-            isIconOnly
-            color="default"
             variant="flat"
+            isLoading={loading}
+            className=" rounded-md border-[0.33px] border-primary-200 bg-primary-200/20 font-arc"
           >
+            <span>Refresh</span>
             <ArrowPathIcon className="size-4" />
           </Button>
         </section>
@@ -136,14 +128,13 @@ export const AddContent = ({
         {list?.map((item, i) => (
           <IterCard item={item} key={i}>
             <Button
+              size="md"
               isIconOnly
-              color="default"
-              radius="full"
-              variant={"flat"}
-              size="sm"
+              variant="flat"
+              className="rounded-md border-[0.33px] border-primary-200 bg-primary-200/30 backdrop-blur-xl"
               onClick={handleDelete(item)}
             >
-              <TrashIcon className="size-4" />
+              <TrashIcon className="size-5 stroke-1 opacity-80" />
             </Button>
           </IterCard>
         ))}
@@ -152,52 +143,21 @@ export const AddContent = ({
   );
 };
 
-// const AdminCard = ({ item, children }: CardProps<Product>) => {
-//   return (
-//     <Card className="max-w-[400px] p-3">
-//       <Header avatar={item.photo_url} title={item.name} subtext={item.price}>
-//         {children}
-//       </Header>
-//       <CardBody className="px-3 py-0 text-small text-default-400"></CardBody>
-//       <CardFooter className="gap-3">
-//         {/* <Extra label="M" value={item.master ? "master" : "sub"} /> */}
-//         <Extra label="by" value={item.created_by} />
-//         <Extra label="id" value={item.price} />
-//       </CardFooter>
-//     </Card>
-//   );
-// };
-
-// const UserCard = ({ item, children }: CardProps<Category>) => {
-//   return (
-//     <Card className="max-w-[400px] p-3">
-//       <Header avatar={item.photo_url} title={item.name} subtext={100}>
-//         {children}
-//       </Header>
-//       <CardBody className="px-3 py-0 text-small text-default-400"></CardBody>
-//       <CardFooter className="gap-3">
-//         <Extra label="ID" value={item.updated_by} />
-//         <Extra label="Joined" value={item.updated_at} />
-//       </CardFooter>
-//     </Card>
-//   );
-// };
-
 const CatCard = ({ item, children }: CardProps<Category>) => {
   return (
-    <Card className="w-full p-3">
+    <Card className="w-full space-y-1.5 rounded-sm border-[0.33px] border-primary-200">
       <Header
         avatar={item.photo_url}
-        title={item.name}
         subtext={item.category_id}
+        title={item.name}
       >
         {children}
       </Header>
-      <CardBody className="px-3 py-0 text-small text-default-400">
+      <CardBody className="px-3 py-0 text-justify text-xs opacity-70">
         {item.description}
         {item.remarks}
       </CardBody>
-      <CardFooter className="gap-3 tracking-tight">
+      <CardFooter className="gap-3 rounded-none border-t-[0.33px] border-default-300/60 bg-default/60 tracking-tight">
         <Extra label="by" value={item.created_by} />
         <Extra label="slug" value={item.slug} />
       </CardFooter>
@@ -207,19 +167,19 @@ const CatCard = ({ item, children }: CardProps<Category>) => {
 
 const ProductCard = ({ item, children }: CardProps<Product>) => {
   return (
-    <Card className="max-w-[400px] p-3">
+    <Card className="w-full space-y-1.5 rounded-sm border-[0.33px] border-primary-200">
       <Header
-        avatar={"/svg/re-up_admin_logo.svg"}
+        avatar={item.photo_url}
         title={item.name}
         subtext={item.product_id}
       >
         {children}
       </Header>
-      <CardBody className="px-3 py-0 text-small text-default-400">
+      <CardBody className="px-3 py-0 text-sm text-default-400">
         {item.description}
         {item.remarks}
       </CardBody>
-      <CardFooter className="gap-3">
+      <CardFooter className="gap-3 rounded-none border-t-[0.33px] border-default-300/60 bg-default/60 tracking-tight">
         <Extra label="by" value={item.created_by} />
         <Extra label="slug" value={item.slug} />
         <Extra label="cat" value={item.category_id} />
@@ -233,19 +193,19 @@ const CartItemCard = ({ item, children }: CardProps<LineItem>) => {
   const stageSep = meco[1]?.split("|>");
   const [id, name, brand, price, image, stock] = stageSep!;
   return (
-    <Card className="max-w-[400px] p-3">
+    <Card className="w-full space-y-1.5 rounded-sm border-[0.33px] border-primary-200">
       <Header avatar={image} title={item.name} subtext={formatAsMoney(+price!)}>
         {children}
       </Header>
       <CardBody className="px-3 py-0 text-xs">
-        <div className="flex items-center space-x-6 opacity-60">
+        <div className="flex items-center space-x-6 font-mono text-xs opacity-60">
           <div>
             {name}
             {meco[0]}
           </div>
         </div>
       </CardBody>
-      <CardFooter className="gap-3">
+      <CardFooter className="gap-3 rounded-none border-t-[0.33px] border-default-300/60 bg-default/60 tracking-tight">
         <Extra label="id" value={id} />
         <Extra label="brand" value={brand} />
         <Extra label="stock" value={stock} />
@@ -265,12 +225,12 @@ interface HeaderProps {
 const Header = ({ avatar, title, subtext, children }: HeaderProps) => (
   <CardHeader className="justify-between">
     <div className="flex gap-6">
-      <Avatar isBordered radius="full" size="md" src={avatar} />
+      <Avatar radius="sm" size="lg" src={avatar} className="" />
       <div className="flex flex-col items-start justify-center gap-1">
-        <h4 className="text-xs font-semibold leading-none text-default-600">
+        <h4 className=" text-xs font-semibold leading-none text-default-600">
           {title}
         </h4>
-        <h5 className="text-xs text-default-500">{subtext}</h5>
+        <h5 className="text-xs font-light text-default-500">{subtext}</h5>
       </div>
     </div>
     {children}

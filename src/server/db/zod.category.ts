@@ -15,8 +15,15 @@ export const CategorySchema = z.object({
   updated_at: z.number(),
   updated_by: z.string(),
 });
-
 export type Category = z.infer<typeof CategorySchema>;
+
+export const InsertCategorySchema = z.object({
+  name: z.string(),
+  slug: z.string().or(z.undefined()),
+  description: z.string().or(z.undefined()),
+  photo_url: z.string().or(z.undefined()),
+  remarks: z.string().or(z.undefined()),
+});
 
 export const GetCategorySchema = z.object({
   categoryId: z.string(),

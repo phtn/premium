@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@/utils/cn";
 import { errHandler, formatAsMoney } from "@/utils/helpers";
 import {
@@ -14,7 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Button } from "@nextui-org/button";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -38,8 +39,10 @@ export function ProductDetails(props: {
   product: Product;
 }) {
   const { product } = props;
-  const { user } = useAuthCtx();
+  const { user, guestId } = useAuthCtx();
   const { setItemCount, setAmount } = useCart();
+
+  const uid = useMemo(() => (user ? user.uid : guestId), [guestId, user]);
 
   const {
     liked,
@@ -51,7 +54,10 @@ export function ProductDetails(props: {
     addToCart,
     incart,
     toggleIncart,
-  } = useProductDetail(user?.uid, user?.email ?? `${user?.uid}@ohmyskin.com`);
+  } = useProductDetail(
+    user?.uid ?? guestId,
+    user?.email ?? `${guestId}@shop.ohmyskin.ph`,
+  );
 
   const { product_id, name, category, subcategory, price } = product;
 
@@ -180,9 +186,9 @@ export function ProductDetails(props: {
           <HeartIcon
             className={cn(
               "size-7 shrink-0 text-gray-400/60",
+              { "animate-enter": !liked },
               {
-                "animate-enter fill-rose-600/70 stroke-[0.33px] text-rose-700/60":
-                  liked,
+                "fill-rose-600/70 stroke-[0.33px] text-rose-700/60": liked,
               },
               "shadow-rose group-hover:drop-shadow-md",
             )}
@@ -239,7 +245,7 @@ export function ProductDetails(props: {
     };
     return (
       <div className="flex h-16 w-full items-center justify-between lg:h-16 portrait:h-[6rem]">
-        <div className="flex w-[148px] items-center justify-between rounded-2xl bg-default-100 p-1">
+        <div className="flex w-[148px] items-center justify-between rounded-2xl bg-primary-100/80 p-1">
           <Button
             isIconOnly
             variant="shadow"
@@ -280,7 +286,7 @@ export function ProductDetails(props: {
     () => (
       <div
         className={cn(
-          "absolute z-50 flex h-[13.5rem] w-full animate-enter flex-col items-center justify-center space-y-6 rounded-xl bg-gradient-to-b from-default via-default-500/10 to-transparent px-6 backdrop-blur-md",
+          "absolute z-50 flex h-[13.5rem] w-full flex-col items-center justify-center space-y-6 overflow-hidden rounded-lg border-x-[0.33px] border-t-[0.33px] border-primary-200/60 bg-gradient-to-b from-default via-default-500/10 to-transparent px-6 backdrop-blur-md",
           { hidden: incart },
         )}
       >
@@ -295,7 +301,7 @@ export function ProductDetails(props: {
         </Button>
         <Button
           as={Link}
-          href={`/cart/${user?.uid}`}
+          href={`/cart/${uid}`}
           variant="shadow"
           color="primary"
           size="lg"
@@ -305,7 +311,7 @@ export function ProductDetails(props: {
         </Button>
       </div>
     ),
-    [toggleIncart, incart, user?.uid],
+    [toggleIncart, incart, uid],
   );
 
   const ImageList = useCallback(() => {
@@ -313,67 +319,84 @@ export function ProductDetails(props: {
     return (
       <div className="flex w-full shrink-0 items-start justify-start space-x-4 overflow-auto pb-2 pr-6">
         {productImages.map((img) => (
-          <ListImage key={img} src={product.dimensions ?? ""} />
+          <ListImage key={img} src={product.photo_url ?? ""} />
         ))}
       </div>
     );
-  }, [product.dimensions]);
+  }, [product.photo_url]);
+
+  const UnitPrice = useCallback(
+    () => (
+      <div className="flex w-[8ch] items-center px-3 py-2 font-ibm text-2xl font-light text-white portrait:text-xl">
+        <p className="">{formatAsMoney(product.price)}</p>
+      </div>
+    ),
+    [product.price],
+  );
+
+  const Quantity = useCallback(
+    () => (
+      <div className="flex w-full items-end px-4 text-[16px] font-medium text-background/60">
+        <p>
+          x<span className="pl-0.5 text-xl ">{quantity}</span>
+        </p>
+      </div>
+    ),
+    [quantity],
+  );
 
   return (
     <div className="relative mx-auto max-w-7xl space-y-6 p-4">
       <BackButton backFn={backFn} />
       <div className="grid grid-cols-1 gap-x-0 md:grid-cols-10 lg:max-h-96 portrait:max-h-[80rem] portrait:gap-y-6">
-        <div className="col-span-5 h-full space-y-4">
-          <ProductImage src={product.dimensions ?? "/images/aqua_al_v1.avif"} />
+        <section className="col-span-5 h-full space-y-4">
+          <ProductImage src={product.photo_url} alt={product.name} />
           <div className="relative flex h-[96px] flex-col justify-start scroll-smooth">
             <div className="pointer-events-none absolute flex h-[90px] w-full bg-gradient-to-l from-white/60 from-[2%] via-transparent via-[12%] to-transparent to-100% pr-6" />
             <ImageList />
           </div>
-        </div>
+        </section>
 
         <div className="col-span-5 flex w-full justify-start pl-2 lg:pl-16 portrait:pl-0">
           <div className="-my-4 flex w-full max-w-md flex-col items-start justify-between rounded-none border-[0.33px] border-default-400/80 bg-default/20 p-4 shadow-lg shadow-default/80 portrait:h-full portrait:border-0 portrait:bg-transparent portrait:px-0 portrait:shadow-none">
             <div className="relative h-40 w-full space-y-6">
-              <div className="space-y-0.5">
+              <section className="space-y-0.5">
                 <Title />
                 <ShortDesc />
-              </div>
+              </section>
 
-              <div className="relative z-20 flex h-[6rem] w-full items-end overflow-auto whitespace-nowrap">
-                <div className="flex w-[8ch] items-center bg-gray-800 px-3 py-2 font-ibm text-2xl font-light text-white portrait:text-xl">
-                  <p className="">{formatAsMoney(product.price)}</p>
-                </div>
-                <div
-                  className={cn(
-                    "flex w-full items-center justify-between bg-gradient-to-l from-default-200/50 to-default-100 px-3 py-2 font-ibm text-2xl font-light text-gray-800 portrait:text-xl",
-                    { "w-[60rem] bg-default-100": quantity === 1 },
-                    { "hidden ": !incart },
-                  )}
-                >
-                  <p className="px-4 text-[16px] font-light text-gray-800">
-                    x
-                    <span className="pl-0.5 text-[18px] font-medium">
-                      {quantity}
-                    </span>
-                  </p>
+              <div className="relative z-20 flex w-full items-end overflow-auto whitespace-nowrap lg:h-[5.75rem] xl:h-[6rem]">
+                <div className="flex w-full items-center justify-between rounded-s-md bg-gradient-to-r from-primary from-15% via-primary/40 to-background">
+                  <UnitPrice />
+                  <Quantity />
                   <div
-                    className={cn("flex items-center", { "hidden ": !incart })}
+                    className={cn(
+                      "flex w-full items-center from-default-200/50 to-default-100 px-3 py-2 font-ibm text-2xl font-light text-gray-800 portrait:text-xl",
+                      { "bg-default-100_": quantity === 1 },
+                      { "hidden ": !incart },
+                    )}
                   >
-                    <MotionNumber
-                      value={product.price * quantity}
-                      format={{
-                        notation: "standard",
-                        style: "currency",
-                        currency: "PHP",
-                        currencySign: "standard",
-                        localeMatcher: "best fit",
-                      }}
-                      transition={{
-                        layout: { duration: 0.4 },
-                        y: { duration: 0.5 },
-                        opacity: { duration: 0.5 },
-                      }}
-                    />
+                    <div
+                      className={cn("flex items-center", {
+                        "hidden ": !incart,
+                      })}
+                    >
+                      <MotionNumber
+                        value={product.price * quantity}
+                        format={{
+                          notation: "standard",
+                          style: "currency",
+                          currency: "PHP",
+                          currencySign: "standard",
+                          localeMatcher: "best fit",
+                        }}
+                        transition={{
+                          layout: { duration: 0.4 },
+                          y: { duration: 0.5 },
+                          opacity: { duration: 0.5 },
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
                 <ResultOption />

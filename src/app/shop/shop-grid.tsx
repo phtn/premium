@@ -2,7 +2,6 @@
 
 import { Button, Tab, Tabs } from "@nextui-org/react";
 import { ProductList } from "@/components/shop/product-list";
-import { useDBContext } from "../ctx";
 import {
   useCallback,
   useState,
@@ -12,13 +11,19 @@ import {
 import { cn } from "@/utils/cn";
 import { SwatchIcon } from "@heroicons/react/24/outline";
 import { LoaderIcon } from "lucide-react";
+import { type Preloaded, usePreloadedQuery } from "convex/react";
+import { type api } from "@vex/api";
 
 interface ShopGridProps {
   slug: string[] | undefined;
   children?: ReactNode;
+  preloadedp: Preloaded<typeof api.products.get.all>;
+  preloadedc: Preloaded<typeof api.categories.get.all>;
 }
-export const ShopGrid = ({ slug }: ShopGridProps) => {
-  const { products, categories, loading } = useDBContext();
+export const ShopGrid = ({ slug, preloadedp, preloadedc }: ShopGridProps) => {
+  const [loading] = useState(false);
+  const products = usePreloadedQuery(preloadedp);
+  const categories = usePreloadedQuery(preloadedc);
 
   const productsByCategory = useCallback(
     (categorySlug: string) =>
@@ -107,7 +112,7 @@ export const ShopGrid = ({ slug }: ShopGridProps) => {
           </Tab>
           {categories?.map((category) => (
             <Tab
-              key={category.categoryId}
+              key={category.category_id}
               className="m-1.5"
               title={
                 <div className="flex items-center space-x-2 capitalize">

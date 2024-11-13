@@ -4,7 +4,7 @@ import {
   redisSetCart,
   redisSetLike,
 } from "@/lib/redis/caller";
-import type { SelectProduct } from "@/server/db/schema";
+import type { Product } from "@/server/db/zod.product";
 import type {
   Attributes,
   LineItem,
@@ -18,7 +18,7 @@ export const useProductDetail = (
   userId: string | undefined,
   email: string | undefined | null,
 ) => {
-  const [product, setProduct] = useState<SelectProduct>();
+  const [product, setProduct] = useState<Product>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
   const [quantity, setQuantity] = useState(1);
@@ -53,7 +53,7 @@ export const useProductDetail = (
     if (!product) return;
     const description =
       product.description +
-      `--${product.productId}|>${product.name}|>${product.brand}|>${product.price}|>${product.imageUrl}|>${product.stock}|>${product.category}|>${product.subcategory}|>${product.size}|>${product.count}|>${product.countUnit}|>${product.weight}|>${product.weightUnit}**`;
+      `--${product.product_id}|>${product.name}|>${product.brand}|>${product.price}|>${product.photo_url}|>${product.in_stock}|>${product.category}|>${product.subcategory}|>${product.size}|>${product.count}|>${product.count_unit}|>${product.weight}|>${product.weight_unit}**`;
     return description;
   }, [product]);
 
@@ -187,7 +187,7 @@ export const attribDefaults: Omit<
   Attributes,
   "line_items" | "description" | "reference_number" | "statement_descriptor"
 > = {
-  send_email_receipt: true,
+  send_email_receipt: false,
   show_description: true,
   show_line_items: true,
   cancel_url: "https://re-up.ph",
@@ -195,13 +195,13 @@ export const attribDefaults: Omit<
   payment_method_types: [
     "gcash",
     "card",
-    "brankas_bdo",
-    "dob_ubp",
-    "brankas_landbank",
-    "brankas_metrobank",
+    // "brankas_bdo",
+    // "dob_ubp",
+    // "brankas_landbank",
+    // "brankas_metrobank",
     "grab_pay",
     "paymaya",
-    "dob",
+    // "dob",
   ],
 };
 

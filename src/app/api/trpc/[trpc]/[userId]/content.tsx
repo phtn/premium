@@ -3,7 +3,6 @@
 import { Badge, Button, Card, CardFooter, CardHeader } from "@nextui-org/react";
 import { Topbar } from "@/components/ui/topbar";
 import {
-  type MouseEvent,
   type PropsWithChildren,
   type ReactElement,
   useCallback,
@@ -12,7 +11,6 @@ import {
   useReducer,
 } from "react";
 import { cn } from "@/utils/cn";
-import { type ItemProps, useCart } from "@/app/ctx";
 import Image from "next/image";
 import {
   ArrowUturnLeftIcon,
@@ -25,6 +23,7 @@ import { formatAsMoney } from "@/utils/helpers";
 import type { LineItem } from "@/server/paymongo/resource/zod.checkout";
 import type { DualIcon } from "@/types";
 import { LoaderIcon } from "lucide-react";
+import { type ItemProps, useCart } from "@/app/ctx/cart";
 
 interface CartContentProps {
   userId: string | null;
@@ -88,10 +87,10 @@ const reducer = (state: ReducerState, action: ActionType): ReducerState => {
         modified: true,
       };
     case "SAVE":
-      const filterNull = state.list.filter((item) => item.quantity !== 0);
+      // const filterNull = state.list.filter((item) => item.quantity !== 0);
       return {
         ...state,
-        list: filterNull,
+        // list: filterNull,
         modified: false,
         history: [],
       };
@@ -157,7 +156,7 @@ export const CartContent = ({ userId }: CartContentProps) => {
   const { pending, createCS, error } = usePaymongo();
 
   if (error) {
-    console.log(error);
+    console.log(JSON.stringify(error, null, 2));
   }
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -343,20 +342,14 @@ const Item = ({ itemProps, fn }: ListItem) => {
     wgtU,
   ] = stageSep!;
 
-  const handleIncr = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleIncr = () => {
     console.log(stock, subcat, sz, cunt, cuntU);
     fn.incrFn(productName!);
   };
-  const handleDecr = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDecr = () => {
     fn.decrFn(productName!);
   };
-  const handleDelete = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDelete = () => {
     fn.deleteFn(productName!);
   };
   return (
@@ -465,7 +458,7 @@ interface ListItem {
 }
 
 const ModButton = (props: {
-  fn: (e: MouseEvent) => void;
+  fn: VoidFunction;
   icon: DualIcon;
   disabled?: boolean;
 }) => (

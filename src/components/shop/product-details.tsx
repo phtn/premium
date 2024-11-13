@@ -1,7 +1,4 @@
 "use client";
-
-import { useAuthContext, useCart } from "@/app/ctx";
-import type { SelectCategory, SelectProduct } from "@/server/db/schema";
 import { cn } from "@/utils/cn";
 import { errHandler, formatAsMoney } from "@/utils/helpers";
 import {
@@ -31,13 +28,17 @@ import MotionNumber from "motion-number";
 import type { DualIcon } from "@/types";
 import { Link } from "@nextui-org/react";
 import type { LikeAttributes } from "@/server/redis/like";
+import { useAuthCtx } from "@/app/ctx/auth";
+import { useCart } from "@/app/ctx/cart";
+import { type Product } from "@/server/db/zod.product";
+import { type Category } from "@/server/db/zod.category";
 
 export function ProductDetails(props: {
-  category: SelectCategory | null;
-  product: SelectProduct;
+  category: Category | null;
+  product: Product;
 }) {
   const { product } = props;
-  const { user } = useAuthContext();
+  const { user } = useAuthCtx();
   const { setItemCount, setAmount } = useCart();
 
   const {
@@ -52,7 +53,7 @@ export function ProductDetails(props: {
     toggleIncart,
   } = useProductDetail(user?.uid, user?.email ?? `${user?.uid}@ohmyskin.com`);
 
-  const { productId, name, category, subcategory, price } = product;
+  const { product_id, name, category, subcategory, price } = product;
 
   useEffect(() => {
     if (product) {
@@ -161,7 +162,7 @@ export function ProductDetails(props: {
 
   const Title = useCallback(() => {
     const likeParams: LikeAttributes = {
-      productId,
+      product_id,
       name,
       category,
       subcategory,
@@ -193,7 +194,7 @@ export function ProductDetails(props: {
     toggleLike,
     product.name,
     liked,
-    productId,
+    product_id,
     name,
     category,
     subcategory,
@@ -204,11 +205,11 @@ export function ProductDetails(props: {
     () => (
       <div className="flex items-center justify-between">
         <p className="font-sarabun text-xs font-light lowercase tracking-widest text-amber-900">
-          {product.short}
+          {product.short_desc}
         </p>
       </div>
     ),
-    [product.short],
+    [product.short_desc],
   );
 
   const ResultOption = useCallback(() => {
@@ -258,7 +259,7 @@ export function ProductDetails(props: {
           </Button>
         </div>
         <AddToCartButton
-          productId={product.productId}
+          productId={product.product_id}
           count={quantity}
           addFn={handleAddToCart}
         />
@@ -268,7 +269,7 @@ export function ProductDetails(props: {
     quantity,
     incrQty,
     decrQty,
-    product.productId,
+    product.product_id,
     addToCart,
     setItemCount,
     product.price,
@@ -408,6 +409,6 @@ export function ProductDetails(props: {
 interface DetailData {
   id: number | string;
   title: string;
-  content: string | null;
+  content: string | undefined;
   icon?: DualIcon;
 }

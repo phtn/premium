@@ -3,22 +3,21 @@ import { useAdminDB, useCatDB, useProductDB, useUserDB } from "./hook";
 import Json from "@/components/ui/json-view";
 import { Button } from "@nextui-org/button";
 import { HashtagIcon } from "@heroicons/react/24/outline";
-import { useCart } from "@/app/ctx";
+import { useCart } from "@/app/ctx/cart";
 
 function AdminTab() {
   const { createAdmin, admin, validAdmin, adminInsert, adminLoading, error } =
     useAdminDB();
   const handleAdminInsert = () => adminInsert();
   return (
-    <div className="overflow-auto md:w-[calc(100vw/2.85)]">
-      <div className="h-[420px] overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
+    <div className="w-2/3 overflow-auto">
+      <div className="h-full overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
         <Header
           createFn={createAdmin}
           insertFn={handleAdminInsert}
           isLoading={adminLoading}
           isValid={validAdmin}
         />
-        <div className="h-6" />
         <Result list={admin} error={error} />
       </div>
     </div>
@@ -48,16 +47,17 @@ function UserTab() {
 export const UserContent = memo(UserTab);
 
 function CatTab() {
-  const { createCat, cat, validCat, catInsert, catLoading, error } = useCatDB();
+  const { cat, validCat, catInsert, catLoading, error } = useCatDB();
   const handleCatInsert = () => catInsert();
   return (
-    <div className="overflow-auto md:w-[calc(100vw/2.85)]">
-      <div className="h-[420px] overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
+    <div className="w-4/5 overflow-auto">
+      <div className="h-fit w-full overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
         <Header
-          createFn={createCat}
+          createFn={() => null}
           insertFn={handleCatInsert}
           isLoading={catLoading}
           isValid={validCat}
+          title="Category"
         />
         <div className="h-6" />
         <Result list={cat} error={error} />
@@ -68,18 +68,12 @@ function CatTab() {
 export const CatContent = memo(CatTab);
 
 function ProductTab() {
-  const {
-    createProduct,
-    product,
-    validProduct,
-    productInsert,
-    productLoading,
-    error,
-  } = useProductDB();
+  const { createProduct, validProduct, productInsert, productLoading, error } =
+    useProductDB();
   const handleProductInsert = () => productInsert();
   return (
     <div className="overflow-auto md:w-[calc(100vw/2.85)]">
-      <div className="h-[420px] overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
+      <div className="h-[420px] w-full overflow-auto rounded-xl bg-default-100/80 px-6 py-4 shadow-inner shadow-default-100 portrait:-ml-5 portrait:w-screen">
         <Header
           createFn={createProduct}
           insertFn={handleProductInsert}
@@ -87,7 +81,7 @@ function ProductTab() {
           isValid={validProduct}
         />
         <div className="h-6" />
-        <Result list={product} error={error} />
+        <Result list={{}} error={error} />
       </div>
     </div>
   );
@@ -119,7 +113,7 @@ function CartTab() {
 }
 export const CartContent = memo(CartTab);
 
-const Title = (props: { title: string }) => (
+const Title = (props: { title?: string }) => (
   <div className="flex min-w-28 items-center justify-between space-x-4 whitespace-nowrap">
     <p className="text-xs font-medium capitalize tracking-tighter">
       {props.title} Schema
@@ -134,17 +128,18 @@ interface HeaderProps {
   isLoading: boolean;
   isValid: boolean;
   children?: ReactNode;
+  title?: string;
 }
 const Header = ({
   createFn,
   insertFn,
   isLoading,
-  isValid,
   children,
+  title,
 }: HeaderProps) => {
   return (
     <div className="flex items-center space-x-4">
-      <Title title={"user"} />
+      <Title title={title} />
       <Button
         size="sm"
         color="secondary"
@@ -158,8 +153,7 @@ const Header = ({
         className="shadow-sm"
         isLoading={isLoading}
         onClick={insertFn}
-        disabled={!isValid}
-        color={isValid ? "primary" : "default"}
+        color={"primary"}
       >
         Insert
       </Button>
@@ -172,7 +166,7 @@ const Result = (props: {
   list: object | undefined;
   error: object | undefined;
 }) => (
-  <div>
+  <div className="h-fit w-full">
     <Json src={{ ...props.list }} />
     {props.error ? <Json src={{ ...props.error }} /> : null}
   </div>

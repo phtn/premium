@@ -23,22 +23,16 @@ type ItemType = Category | Product | LineItem;
 type CardProps<T extends ItemType> = { item: T; children: ReactNode };
 type CardComponent = ComponentType<CardProps<ItemType>>;
 
-// export type PageData = {
-//   list: ItemType[] | undefined;
-//   fn: () => Promise<void>;
-//   IterCard: CardComponent;
-// };
-
-interface TestLabContentProps {
+interface AddContentProps {
   id: string;
   preloadedProducts: Preloaded<typeof api.products.get.all>;
   preloadedCategories: Preloaded<typeof api.categories.get.all>;
 }
-export const TestLabContent = ({
+export const AddContent = ({
   id,
   preloadedProducts,
   preloadedCategories,
-}: TestLabContentProps) => {
+}: AddContentProps) => {
   const products = usePreloadedQuery(preloadedProducts);
   const categories = usePreloadedQuery(preloadedCategories);
   const { product, category } = useVex();

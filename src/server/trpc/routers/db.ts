@@ -16,27 +16,27 @@ import {
 import {
   DeleteCategorySchema,
   GetCategorySchema,
-  InsertCategorySchema,
+  // InsertCategorySchema,
   UpdateCategorySchema,
 } from "@/server/db/zod.category";
 import {
   deleteCategory,
   getAllCategories,
   getCategory,
-  insertCategory,
+  // insertCategory,
   updateCategory,
 } from "@/server/db/queries/category";
 import {
   deleteProduct,
   getAllProducts,
   getProduct,
-  insertProduct,
+  // insertProduct,
   updateProduct,
 } from "@/server/db/queries/product";
 import {
   DeleteProductSchema,
   GetProductSchema,
-  InsertProductSchema,
+  // InsertProductSchema,
   UpdateProductSchema,
 } from "@/server/db/zod.product";
 import {
@@ -66,9 +66,9 @@ export const sqlRouter = router({
   updateUser: procedure(UpdateUserSchema).mutation(asyncR(updateUser)),
   getAllUsers: queryAll().query(asyncR(getAllUsers)),
 
-  insertCategory: procedure(InsertCategorySchema).mutation(
-    asyncRx(insertCategory),
-  ),
+  // insertCategory: procedure(InsertCategorySchema).mutation(
+  //   asyncRx(insertCategory),
+  // ),
   getCategory: procedure(GetCategorySchema).mutation(asyncR(getCategory)),
   updateCategory: procedure(UpdateCategorySchema).mutation(
     asyncR(updateCategory),
@@ -78,9 +78,9 @@ export const sqlRouter = router({
   ),
   getAllCategories: queryAll().query(asyncR(getAllCategories)),
 
-  insertProduct: procedure(InsertProductSchema).mutation(
-    asyncRx(insertProduct),
-  ),
+  // insertProduct: procedure(InsertProductSchema).mutation(
+  //   asyncRx(insertProduct),
+  // ),
   getProduct: procedure(GetProductSchema).query(asyncR(getProduct)),
   updateProduct: procedure(UpdateProductSchema).mutation(asyncR(updateProduct)),
   deleteProduct: procedure(DeleteProductSchema).mutation(

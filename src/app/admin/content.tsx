@@ -8,17 +8,16 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { cn } from "@/utils/cn";
 import {
   BanknotesIcon,
-  CreditCardIcon,
   ReceiptRefundIcon,
   UsersIcon,
   RectangleGroupIcon,
   BuildingStorefrontIcon,
   ClipboardDocumentCheckIcon,
-} from "@heroicons/react/24/outline";
+  PlusCircleIcon,
+} from "@heroicons/react/24/solid";
 import {
   PackageIcon,
   PencilLineIcon,
@@ -29,6 +28,7 @@ import { StatPanel, StatPanelContent } from "@/components/app/stat-panel";
 import { BeakerIcon } from "@heroicons/react/24/solid";
 import { useAuthState } from "@/utils/hooks/authState";
 import { auth } from "@/lib/firebase/config";
+import { Image } from "@nextui-org/react";
 
 export function AdminBoard({ children }: PropsWithChildren) {
   const { user } = useAuthState(auth);
@@ -37,6 +37,11 @@ export function AdminBoard({ children }: PropsWithChildren) {
       label: "Dashboard",
       href: "/admin",
       icon: { type: "icon", content: RectangleGroupIcon },
+    },
+    {
+      label: "Add Entities",
+      href: "/admin/add",
+      icon: { type: "icon", content: PlusCircleIcon },
     },
     {
       label: "Customers",
@@ -68,11 +73,11 @@ export function AdminBoard({ children }: PropsWithChildren) {
       href: "/admin/inventory",
       icon: { type: "icon", content: PackageIcon },
     },
-    {
-      label: "Payments",
-      href: "/admin/payments",
-      icon: { type: "icon", content: CreditCardIcon },
-    },
+    // {
+    //   label: "Payments",
+    //   href: "/admin/payments",
+    //   icon: { type: "icon", content: CreditCardIcon },
+    // },
     {
       label: "Refunds",
       href: "#",
@@ -105,9 +110,16 @@ export function AdminBoard({ children }: PropsWithChildren) {
       <Sidebar open={open} setOpen={setOpen} animate={true}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-            <>
-              <Logo />
-            </>
+            <SidebarLink
+              link={{
+                label: "ADMIN",
+                href: "#",
+                icon: {
+                  type: "image",
+                  content: user?.photoURL ?? "/svg/oh.svg",
+                },
+              }}
+            />
             <div className="mt-6 flex flex-col gap-2">
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
@@ -141,12 +153,9 @@ export const Logo = () => {
     <Link href="#" className="relative z-20 flex items-center space-x-2 py-1">
       <Image
         alt="admin-logo"
-        src={"/svg/re-up_admin_logo.svg"}
-        className="h-5 w-auto flex-shrink-0"
-        width={0}
-        height={0}
-        unoptimized
-        priority
+        src={"/svg/oh.svg"}
+        className="h-5 w-6 shrink-0 rounded-none bg-zinc-500"
+        isBlurred
       />
       <motion.span
         initial={{ opacity: 0 }}

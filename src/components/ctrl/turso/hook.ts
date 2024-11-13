@@ -1,21 +1,16 @@
 import { useCallback, useState } from "react";
 import { faker } from "@faker-js/faker";
 import { insertUser } from "@/lib/db/user";
-import { errHandler, Ok } from "@/utils/helpers";
+import { errHandler, guid, Ok } from "@/utils/helpers";
 import { InsertUserSchema } from "@/server/db/zod.user";
 import type { InsertAdmin, InsertUser } from "@/server/db/schema";
-import {
-  type InsertCategory,
-  InsertCategorySchema,
-} from "@/server/db/zod.category";
-import { insertCategory } from "@/lib/db/category";
-import {
-  type InsertProduct,
-  InsertProductSchema,
-} from "@/server/db/zod.product";
-import { insertProduct } from "@/lib/db/product";
+import { CategorySchema } from "@/server/db/zod.category";
+import { type Product, ProductSchema } from "@/server/db/zod.product";
+// import { insertProduct } from "@/lib/db/product";
 import { InsertAdminSchema } from "@/server/db/zod.admin";
 import { insertAdmin } from "@/lib/db/admin";
+import { type InsertCategory } from "convex/categories/create";
+import { useVex } from "@/app/ctx/convex";
 
 export function useAdminDB() {
   const [validAdmin, setValidAdmin] = useState<boolean>(false);
@@ -86,59 +81,56 @@ const randomUser = () =>
   }) satisfies InsertUser;
 
 export function useCatDB() {
-  const [cat, setCat] = useState<InsertCategory>();
+  const [cat, setCat] = useState<InsertCategory>(randomCategory);
   const [validCat, setValidCat] = useState(false);
   const [catLoading, setLoading] = useState(false);
-  const [error, setError] = useState<Error>();
+  const [error] = useState<Error>();
 
-  const createCat = () => {
-    const newCat = randomCat();
-    setCat(newCat);
-    setValidCat(InsertCategorySchema.safeParse(newCat).success);
+  const { category } = useVex();
+
+  const createCategory = () => {
+    setCat(randomCategory);
+    setValidCat(CategorySchema.safeParse(randomCategory).success);
   };
 
   const catInsert = useCallback(() => {
     setLoading(true);
     if (!cat && !validCat) return;
-    insertCategory(cat!)
-      .then(Ok(setLoading, cat?.name ?? "", "added"))
-      .catch(errHandler(setLoading, setError));
-  }, [cat, validCat]);
+    category
+      .create(cat)
+      .then(Ok(setLoading, "1 category added."))
+      .catch(errHandler(setLoading));
+  }, [cat, validCat, category]);
 
-  return { createCat, cat, validCat, catLoading, catInsert, error };
+  return { cat, createCategory, validCat, catLoading, catInsert, error };
 }
 
-const randomCat = () =>
-  ({
-    categoryId: Date.now().toString(36),
-    name: "Gifts",
-    slug: "gifts",
-    description:
-      "Gifts and presents, perfect for weddings, anniversaries, and holidays.",
-    createdBy: "m0twy921",
-    photoURL:
-      "https://thebodyshop.com.ph/cdn/shop/products/Discover_Your_Glow_Vitamin_C_Skincare_Routine_01_1296x.jpg?v=1698319267",
-    remarks: "For men & women.",
-  }) satisfies InsertCategory;
+const randomCategory = {
+  uid: "admin",
+  name: "Skin Care",
+  slug: "skincare",
+  description:
+    "Discover the ultimate in skincare with our carefully curated collection, designed to nurture and rejuvenate every skin type. From luxurious moisturizers and gentle cleansers to potent serums and exfoliators, each product is crafted with the finest ingredients to help you achieve a radiant, healthy glow. Our skincare selection includes formulas that address a range of needs—whether it's hydration, anti-aging, acne control, or simply maintaining a balanced, natural complexion. Embrace a skincare routine that’s as unique as you are, and let your natural beauty shine every day. Explore our collection and find your new skincare essentials!",
+  photo_url:
+    "https://rustans.com/cdn/shop/files/LM_HR_PACKSHOTIMAGE_1_8_RGB.jpg?v=1725239864&width=1400",
+  remarks: "For men & women.",
+} satisfies InsertCategory;
 
 export function useProductDB() {
-  const [product, setProduct] = useState<InsertProduct>();
+  const [product, setProduct] = useState<object>({});
   const [validProduct, setValidProduct] = useState(false);
   const [productLoading, setLoading] = useState(false);
-  const [error, setError] = useState<Error>();
+  const [error] = useState<Error>();
 
   const createProduct = () => {
     // const newProduct = randomProduct();
     setProduct(dummyProduct);
-    setValidProduct(InsertProductSchema.safeParse(dummyProduct).success);
+    setValidProduct(ProductSchema.safeParse(dummyProduct).success);
   };
 
   const productInsert = useCallback(() => {
     setLoading(true);
     if (!product && !validProduct) return;
-    insertProduct(product!)
-      .then(Ok(setLoading, product?.name ?? "", "added"))
-      .catch(errHandler(setLoading, setError));
   }, [product, validProduct]);
 
   return {
@@ -151,41 +143,44 @@ export function useProductDB() {
   };
 }
 
-export const randomProduct = () =>
-  ({
-    productId: Date.now().toString(36),
-    categoryId: "m0txakzd",
-    price: parseFloat(faker.commerce.price()),
-    stock: 10,
-    active: true,
-    name: faker.commerce.product(),
-    slug: `skin-care/${faker.commerce.product().toLowerCase()}`,
-    description: faker.commerce.productDescription(),
-    material: faker.commerce.productMaterial(),
-    dimensions: faker.commerce.productAdjective(),
-    remarks: faker.commerce.productAdjective(),
-    short: faker.commerce.productAdjective(),
-    createdBy: "m0twy921",
-  }) satisfies InsertProduct;
+export const randomProduct = () => ({
+  product_id: Date.now().toString(36),
+  category_id: "m0txakzd",
+  price: parseFloat(faker.commerce.price()),
+  in_stock: 10,
+  is_active: true,
+  name: faker.commerce.product(),
+  slug: `skin-care/${faker.commerce.product().toLowerCase()}`,
+  description: faker.commerce.productDescription(),
+  material: faker.commerce.productMaterial(),
+  dimensions: faker.commerce.productAdjective(),
+  remarks: faker.commerce.productAdjective(),
+  short_desc: faker.commerce.productAdjective(),
+  created_by: "m0twy921",
+  updated_at: Date.now(),
+  updated_by: "",
+});
 
 const dummyProduct = {
-  productId: Date.now().toString(36),
+  product_id: guid(),
   name: "Secura Extra Large",
   description:
     "Transparent, silky smooth condoms Extra Large from Secura Condoms with more size and comfort for the larger penis. With silicone-based coating and reservoir. Odourless and tasteless. Length 180 mm, nominal width 60 mm. 48 pieces",
   price: 2250,
-  stock: 200,
+  in_stock: 200,
   material: "Synthetic Skin",
-  imageUrl: "img003",
+  photo_url: "img003",
   slug: "make-up/lipstick",
   dimensions: "4g",
-  short: "For hung.",
-  categoryId: "m0txakzd", // Assuming categoryId for skincare
-  active: true,
-  liveMode: false,
+  short_desc: "For hung.",
+  category_id: "m0txakzd", // Assuming categoryId for skincare
+  is_active: true,
+  is_live: false,
   remarks: "Best seller",
-  createdBy: "m0twy921",
-} satisfies InsertProduct;
+  created_by: "m0twy921",
+  updated_at: Date.now(),
+  updated_by: "admin",
+} satisfies Omit<Product, "_id" | "_creationTime">;
 
 export const productImages = [
   "https://piliani.com.ph/cdn/shop/files/PA-IHFC_2048x2048.jpg?v=1706746911",

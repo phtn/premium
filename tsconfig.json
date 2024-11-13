@@ -24,7 +24,8 @@
       "@resource/*": ["./src/server/paymongo/resource/*"],
       "@requests/*": ["./src/server/paymongo/requests/*"],
       "@sdk/*": ["./src/server/paymongo/sdk/*"],
-      "@lib/*": ["./src/lib/*"]
+      "@lib/*": ["./src/lib/*"],
+      "@vex/*": ["convex/_generated/*"]
     }
   },
   "include": [

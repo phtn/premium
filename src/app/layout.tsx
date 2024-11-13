@@ -4,9 +4,8 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Inter, Sarabun, IBM_Plex_Sans, Archivo } from "next/font/google";
 import { type Metadata } from "next";
-import { TRPCProvider } from "@/trpc/provider";
-import { Providers } from "./providers";
 import { cn } from "@/utils/cn";
+import { Providers } from "./ctx/providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,9 +31,9 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
-  title: "Premium x re-up.ph ",
-  description: "Premium by xpriori",
-  icons: [{ rel: "icon", url: "/svg/access_logo.svg" }],
+  title: "Oh My Skin!",
+  description: "Skin Care & Beautiy Products",
+  icons: [{ rel: "icon", url: "/svg/oh.svg" }],
 };
 
 export default function RootLayout({
@@ -48,9 +47,7 @@ export default function RootLayout({
       )}
     >
       <body>
-        <TRPCProvider>
-          <Providers>{children}</Providers>
-        </TRPCProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

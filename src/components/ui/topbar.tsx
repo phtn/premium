@@ -11,7 +11,8 @@ import { Logo } from "@/components/app/logo";
 import { motion } from "framer-motion";
 import { useCallback } from "react";
 import { Loader } from "lucide-react";
-import { useAuthContext, useCart } from "@/app/ctx";
+import { useAuthCtx } from "@/app/ctx/auth";
+import { useCart } from "@/app/ctx/cart";
 
 export interface Brand {
   label?: string;
@@ -33,8 +34,9 @@ interface TopbarProps {
   extras?: Extras[];
 }
 export function Topbar({ brand, extras }: TopbarProps) {
-  const { user } = useAuthContext();
+  const { user } = useAuthCtx();
   const { itemCount, loading } = useCart();
+  console.log(itemCount);
 
   const CartItemCount = useCallback(() => {
     if (loading)

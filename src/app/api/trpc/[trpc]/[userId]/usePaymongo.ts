@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export const usePaymongo = () => {
   const [pending, setLoading] = useState(false);
-  const [error, setError] = useState<Error>();
+  const [error] = useState<Error>();
   const router = useRouter();
 
   const createCS = async (params: CheckoutParams | undefined) => {
@@ -14,11 +14,15 @@ export const usePaymongo = () => {
     if (params) {
       await createCheckout(params)
         .then((resource) => {
+          console.log(resource);
           setLoading(false);
           const checkoutURL = resource.attributes.checkout_url;
           router.push(checkoutURL);
         })
-        .catch(errHandler(setLoading, setError));
+        .catch((e) => {
+          errHandler(setLoading);
+          console.log(e);
+        });
     }
   };
 

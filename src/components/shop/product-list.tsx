@@ -1,30 +1,18 @@
 "use client";
 import { Link } from "@nextui-org/react";
-import type { SelectProduct } from "@/server/db/schema";
 import Image from "next/image";
 import { formatAsMoney } from "@/utils/helpers";
 import { useCallback } from "react";
+import { type Product } from "@/server/db/zod.product";
 
 interface ProductInfoProps {
   name: string;
-  short: string | null;
+  short: string | undefined;
   price: number;
-  brand: string | null;
+  brand: string | undefined;
 }
 
-interface ProductItemProps {
-  productId: string;
-  slug: string | null;
-  dimensions: string | null;
-  name: string;
-  short: string | null;
-  price: number;
-  brand: string | null;
-}
-
-export const ProductList = (props: {
-  products: SelectProduct[] | undefined;
-}) => {
+export const ProductList = (props: { products: Product[] }) => {
   const ProductInfo = useCallback(
     ({ name, short, price, brand }: ProductInfoProps) => (
       <div className="flex h-24 items-center justify-between whitespace-nowrap bg-white px-4 py-4 text-gray-800 transition-all duration-700 ease-in-out md:mx-6 group-hover:md:mx-6 xl:mx-10 xl:px-6 portrait:mx-4 portrait:px-4">
@@ -47,17 +35,17 @@ export const ProductList = (props: {
 
   const ProductItem = useCallback(
     ({
-      productId,
+      product_id,
       slug,
       dimensions,
       name,
-      short,
+      short_desc,
       price,
       brand,
-    }: ProductItemProps) => (
+    }: Product) => (
       <Link
-        href={`/shop/${slug}/${productId}`}
-        key={productId}
+        href={`/shop/${slug}/${product_id}`}
+        key={product_id}
         className="group pointer-events-auto overflow-auto transition-all duration-300 hover:opacity-100 hover:md:shadow-md hover:md:shadow-default"
       >
         <div className="w-full overflow-auto rounded-none border-[0.33px] border-x-[0.33px] border-white group-hover:md:border-default-400/30 portrait:border-default-400/60">
@@ -65,7 +53,12 @@ export const ProductList = (props: {
             src={dimensions ?? "/svg/re-up_admin_logo.svg"}
             className="flex h-96 w-full items-center justify-center overflow-auto bg-white object-center portrait:h-fit"
           />
-          <ProductInfo name={name} short={short} price={price} brand={brand} />
+          <ProductInfo
+            name={name}
+            short={short_desc}
+            price={price}
+            brand={brand}
+          />
         </div>
       </Link>
     ),
@@ -75,7 +68,7 @@ export const ProductList = (props: {
     <div className="flex w-screen justify-center">
       <div className="mx-1 grid w-full grid-cols-1 gap-y-2 scroll-smooth md:grid-cols-2 lg:grid-cols-3 portrait:mx-0 portrait:gap-y-2 portrait:border-0">
         {props.products?.map((product) => (
-          <ProductItem key={product.productId} {...product} />
+          <ProductItem key={product.product_id} {...product} />
         ))}
       </div>
     </div>

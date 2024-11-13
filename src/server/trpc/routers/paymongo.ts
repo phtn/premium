@@ -112,8 +112,6 @@ export const paymongoRouter = router({
     asyncR(paymongo.customer.delete),
   ),
 
-  // ... other routes ...
-
   // Webhook API routes
   createWebhook: procedure(CreateWebhookParamsSchema).mutation(
     asyncR(paymongo.webhook.create),

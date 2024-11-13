@@ -37,6 +37,7 @@
     "bun": "^1.1.27",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "convex": "^1.17.0",
     "drizzle-orm": "^0.30.10",
     "firebase": "^10.13.1",
     "firebase-admin": "^12.4.0",

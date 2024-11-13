@@ -1,13 +1,13 @@
 "use client";
 import { CTRLBoard } from "@/components/ctrl/turso/board";
-import { BeakerIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { type PropsWithChildren } from "react";
 
-const TestLabLayout = ({ children }: PropsWithChildren) => {
+const AddLayout = ({ children }: PropsWithChildren) => {
   return (
     <div className="space-y-4 p-1">
       <div className="flex items-center space-x-2 text-neutral-800">
-        <BeakerIcon className="size-4 stroke-1" />
+        <PlusCircleIcon className="size-6 stroke-[2px] text-zinc-400" />
         <h1 className="font-medium tracking-tighter">Test Lab</h1>
       </div>
       <div className="flex justify-between py-5">
@@ -17,4 +17,4 @@ const TestLabLayout = ({ children }: PropsWithChildren) => {
     </div>
   );
 };
-export default TestLabLayout;
+export default AddLayout;

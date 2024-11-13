@@ -121,7 +121,7 @@ export const MobileSidebar = ({
     <>
       <div
         className={cn(
-          "flex h-10 w-full flex-row items-center justify-between bg-neutral-100 px-4 py-4 dark:bg-neutral-800 md:hidden",
+          "flex h-10 w-full flex-row items-center justify-between px-4 py-4 dark:bg-neutral-800 md:hidden",
         )}
         {...props}
       >
@@ -137,10 +137,6 @@ export const MobileSidebar = ({
               initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "-100%", opacity: 0 }}
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-              }}
               className={cn(
                 "fixed inset-0 z-[100] flex h-full w-full flex-col justify-between bg-white p-10 dark:bg-neutral-900",
                 className,
@@ -178,10 +174,17 @@ export const SidebarLink = (props: SidebarLinkProps) => {
       return (
         // bg-orange-500/10
         <div
-          className={cn("rounded-xl p-1", {
-            "bg-warning text-white":
-              pathname.length >= 3 && props.link.href.includes(sub!),
-          })}
+          className={cn(
+            "my-1 rounded-xl p-[2px]",
+            {
+              "bg-[#EB4F80] text-white":
+                pathname.length >= 2 && props.link.href.includes(sub!),
+            },
+            {
+              "bg-[#EB4F80] text-white":
+                pathname.length === 2 && `/${pathname[1]}` === props.link.href,
+            },
+          )}
         >
           <IconComponent
             className={cn("size-5 flex-shrink-0 stroke-1", {
@@ -198,20 +201,17 @@ export const SidebarLink = (props: SidebarLinkProps) => {
           alt={props.link.label}
           width={28}
           height={28}
-          className={cn("size-7 flex-shrink-0 rounded-full", {
-            "filter-primary":
-              pathname.length >= 3 && props.link.href.includes(sub!),
-          })}
+          className={cn(
+            "mr-1 size-7 flex-shrink-0 rounded-full border border-zinc-300 bg-zinc-50 p-[3px] drop-shadow-md",
+            {
+              "filter-primary":
+                pathname.length >= 3 && props.link.href.includes(sub!),
+            },
+          )}
         />
       );
     }
-  }, [
-    props.link.icon,
-    props.link.href,
-    props.link.label,
-    sub,
-    pathname.length,
-  ]);
+  }, [props.link.icon, props.link.href, props.link.label, sub, pathname]);
 
   return (
     <Link
@@ -227,17 +227,21 @@ export const SidebarLink = (props: SidebarLinkProps) => {
       <motion.span
         animate={{
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
-          opacity: animate ? (open ? 1 : 0) : 1,
+        }}
+        transition={{
+          type: "spring",
+          bounce: 0.5,
+          damping: 2,
         }}
         className={cn(
-          "!m-0 inline-block whitespace-pre rounded-lg px-3 py-1 text-sm tracking-tighter text-neutral-800 transition duration-200 group-hover/sidebar:translate-x-1 group-hover/sidebar:bg-neutral-200/80 dark:text-neutral-200",
+          "!m-0 inline-block whitespace-pre rounded-full px-3 py-1 text-sm font-medium tracking-tighter text-neutral-800 transition duration-200 group-hover/sidebar:translate-x-1 group-hover/sidebar:bg-neutral-200/80 dark:text-neutral-200",
           {
-            "font-medium text-warning":
+            "font-medium":
               pathname.length >= 3 && props.link.href.includes(sub!),
           },
           {
-            "font-medium text-warning":
-              pathname.length <= 2 && props.link.href.includes(pathname[1]!),
+            "text- font-medium":
+              pathname.length <= 2 && props.link.href.includes(pathname[2]!),
           },
         )}
       >

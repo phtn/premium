@@ -1,11 +1,5 @@
 "use client";
 
-import type {
-  SelectAdmin,
-  SelectCategory,
-  SelectProduct,
-  SelectUser,
-} from "@/server/db/schema";
 import {
   createContext,
   type Dispatch,
@@ -16,85 +10,15 @@ import {
   useState,
   useCallback,
 } from "react";
-import { useFetchDB } from "./hooks";
 import type {
   CheckoutParams,
   LineItem,
 } from "@/server/paymongo/resource/zod.checkout";
-import { useAuthState } from "@/utils/hooks/authState";
-import { auth } from "@/lib/firebase/config";
-import { errHandler, Ok } from "@/utils/helpers";
+import { errHandler, generateRef, Ok } from "@/utils/helpers";
 import { redisGetCart, redisSetCart } from "@/lib/redis/caller";
 import { attribDefaults } from "@/components/shop/hooks/useProductDetail";
-import { type User } from "firebase/auth";
-import { getSessionId } from "./actions";
 import type { RedisCartData } from "@/server/redis/cart";
-
-export const AuthCtx = createContext<{ user: User | null } | null>(null);
-
-export const AuthProvider = ({ children }: PropsWithChildren) => {
-  const [guestId, setGuestId] = useState<string | undefined>();
-  const { user } = useAuthState(auth);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const setUserSession = async () => {
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        if (!guestId) {
-          try {
-            const id = await getSessionId();
-            setGuestId(`guest_${id}`);
-            setCurrentUser({ uid: `guest_${id}` } as User); // Set guest user
-          } catch (error) {
-            console.error("Error generating guest ID:", error);
-          }
-        } else {
-          setCurrentUser({ uid: guestId } as User);
-        }
-      }
-    };
-
-    setUserSession().catch(console.log);
-  }, [user, guestId]); // Dependencies to run effect when user or guestId changes
-
-  return (
-    <AuthCtx.Provider value={{ user: currentUser }}>
-      {children}
-    </AuthCtx.Provider>
-  );
-};
-
-export const useAuthContext = () => {
-  const context = useContext(AuthCtx);
-  if (!context) throw new Error();
-  return context;
-};
-
-interface DBValues {
-  users: SelectUser[] | undefined;
-  admins: SelectAdmin[] | undefined;
-  products: SelectProduct[] | undefined;
-  categories: SelectCategory[] | undefined;
-  loading: boolean;
-}
-export const DB = createContext<DBValues | null>(null);
-
-export const ContextDB = ({ children }: PropsWithChildren) => {
-  const { users, products, categories, admins, loading } = useFetchDB();
-  return (
-    <DB.Provider value={{ users, products, categories, admins, loading }}>
-      {children}
-    </DB.Provider>
-  );
-};
-
-export const useDBContext = () => {
-  const context = useContext(DB);
-  if (!context) throw new Error();
-  return context;
-};
+import { useAuthCtx } from "./auth";
 
 interface CartCtxValues {
   itemCount: number | null;
@@ -112,13 +36,14 @@ interface CartCtxValues {
   checkoutParams: CheckoutParams | undefined;
 }
 export const CartCtx = createContext<CartCtxValues | null>(null);
-export const CartData = ({ children }: PropsWithChildren) => {
-  const { user } = useAuthContext();
+export const CartProvider = ({ children }: PropsWithChildren) => {
+  const { user } = useAuthCtx();
 
   const [itemCount, setItemCount] = useState(0);
   const [cartData, setCartData] = useState<RedisCartData | null>();
   const [loading, setLoading] = useState(false);
   const [refNumber, setRefNumber] = useState<string | undefined>();
+  const [newRefNumber, setNewRefNumber] = useState<string | undefined>();
   const [amount, setAmount] = useState<number>(0);
   const [itemList, setItemList] = useState<LineItem[] | undefined>();
   const [updated, setUpdated] = useState<number>();
@@ -127,6 +52,16 @@ export const CartData = ({ children }: PropsWithChildren) => {
   >();
 
   const isGuest = user?.uid?.includes("guest");
+
+  const createNewRef = useCallback(() => {
+    if (isGuest) {
+      setNewRefNumber(generateRef().toUpperCase());
+    }
+  }, [isGuest]);
+
+  useEffect(() => {
+    createNewRef();
+  }, [createNewRef]);
 
   const descriptor = isGuest
     ? `Guest checkout: ID-${user?.uid}`
@@ -137,7 +72,7 @@ export const CartData = ({ children }: PropsWithChildren) => {
       const data = (await redisGetCart(`cart_${userId}`)) as RedisCartData[];
       const { lineItems, cartD } = getCartData(data);
 
-      setRefNumber(cartD?.data.attributes.reference_number);
+      setRefNumber(newRefNumber ?? cartD?.data.attributes.reference_number);
 
       setUpdated(cartD?.updated);
 
@@ -151,12 +86,17 @@ export const CartData = ({ children }: PropsWithChildren) => {
       count && setItemCount(count);
 
       if (lineItems) {
-        setCSParams(setCheckoutParams, lineItems, refNumber, descriptor);
+        setCSParams(
+          setCheckoutParams,
+          lineItems,
+          newRefNumber ?? refNumber,
+          `${descriptor}_${newRefNumber ?? refNumber}`,
+        );
       }
 
       return lineItems;
     },
-    [setItemCount, refNumber, descriptor],
+    [setItemCount, refNumber, descriptor, newRefNumber],
   );
 
   const deleteItem = useCallback(
@@ -205,7 +145,8 @@ export const CartData = ({ children }: PropsWithChildren) => {
           .then(() => {
             Ok(setLoading, "Cart updated.");
           })
-          .catch(errHandler(setLoading));
+          .catch(errHandler(setLoading))
+          .finally(Ok(setLoading, "Cart updated & saved!"));
       }
     },
     [cartData, user?.uid, refNumber, descriptor],
@@ -215,10 +156,10 @@ export const CartData = ({ children }: PropsWithChildren) => {
     setLoading(true);
     if (user?.uid) {
       getCartItems(user.uid)
-        .catch(errHandler(setLoading))
-        .finally(() => {
-          setLoading(false);
-        });
+        .then(() => setLoading(false))
+        .catch(errHandler(setLoading));
+    } else {
+      setLoading(false);
     }
   }, [getCartItems, user?.uid]);
 

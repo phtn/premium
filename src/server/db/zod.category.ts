@@ -1,18 +1,22 @@
 import { z } from "zod";
 
-export const InsertCategorySchema = z.object({
-  categoryId: z.string(),
-  createdBy: z.string(),
+export const CategorySchema = z.object({
+  _id: z.string(),
+  _creationTime: z.number(),
+  category_id: z.string(),
+  created_by: z.string(),
   name: z.string(),
-  slug: z.string().nullable(),
-  description: z.string().nullable(),
-  photoURL: z.string().url().nullable(),
-  liveMode: z.boolean().default(false).optional(),
-  active: z.boolean().default(true).optional(),
-  remarks: z.string().nullable(),
+  slug: z.string().or(z.undefined()),
+  description: z.string().or(z.undefined()),
+  photo_url: z.string().or(z.undefined()),
+  is_live: z.boolean(),
+  is_active: z.boolean(),
+  remarks: z.string().or(z.undefined()),
+  updated_at: z.number(),
+  updated_by: z.string(),
 });
 
-export type InsertCategory = z.infer<typeof InsertCategorySchema>;
+export type Category = z.infer<typeof CategorySchema>;
 
 export const GetCategorySchema = z.object({
   categoryId: z.string(),

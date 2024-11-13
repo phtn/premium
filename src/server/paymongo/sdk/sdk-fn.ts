@@ -1,6 +1,6 @@
 import type { SecretOrPublicKey } from "@resource/zod.common";
 import type { AxiosInstance, AxiosRequestConfig } from "axios";
-import { createAxiosInstance } from "@sdk/createAxiosInstance";
+import { createAxiosInstance } from "@sdk/axios-instance";
 import {
   createPaymentMethod,
   retreivePaymentMethod,
@@ -104,14 +104,12 @@ const Paymongo = (key: SecretOrPublicKey, axiosConfig?: AxiosRequestConfig) => {
       create: createFn(createRefund, axiosInstance),
       retrieve: createFn(retrieveRefund, axiosInstance),
     },
-    // Add customer methods
     customer: {
       create: createFn(createCustomer, axiosInstance),
       retrieve: createFn(retrieveCustomer, axiosInstance),
       edit: createFn(editCustomer, axiosInstance),
       delete: createFn(deleteCustomer, axiosInstance),
     },
-    // Add webhook methods
     webhook: {
       create: createFn(createWebhook, axiosInstance),
       retrieve: createFn(retrieveWebhook, axiosInstance),
@@ -120,7 +118,6 @@ const Paymongo = (key: SecretOrPublicKey, axiosConfig?: AxiosRequestConfig) => {
       disable: createFn(disableWebhook, axiosInstance),
       update: createFn(updateWebhook, axiosInstance),
     },
-    // Add link methods
     link: {
       create: createFn(createLink, axiosInstance),
       retrieve: createFn(retrieveLink, axiosInstance),

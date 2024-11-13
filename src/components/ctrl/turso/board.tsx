@@ -79,7 +79,7 @@ export function CTRLBoard({ children }: CTRLTabProps) {
   return (
     <div className="flex w-full flex-col gap-4 tracking-tight">
       <Tabs
-        isVertical
+        // isVertical
         defaultSelectedKey={"user"}
         selectedKey={selected}
         onSelectionChange={handleSelect}

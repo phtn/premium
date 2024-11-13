@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export const LikeAttributesSchema = z.object({
-  productId: z.string(),
+  product_id: z.string(),
   name: z.string(),
-  category: z.string().nullable(),
-  subcategory: z.string().nullable(),
+  category: z.optional(z.string()),
+  subcategory: z.optional(z.string()),
   price: z.number().or(z.undefined()),
   createdAt: z.number().optional(),
 });

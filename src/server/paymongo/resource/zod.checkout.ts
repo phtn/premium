@@ -15,7 +15,7 @@ export const AddressSchema = z.object({
 export type Address = z.infer<typeof AddressSchema>;
 
 export const BillingSchema = z.object({
-  address: AddressSchema,
+  address: AddressSchema.optional(),
   name: z.string(),
   email: z.string(),
   phone: z.string(),
